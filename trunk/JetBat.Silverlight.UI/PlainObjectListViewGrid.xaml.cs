@@ -166,7 +166,7 @@ namespace JetBat.Silverlight.UI
 								Text = "Восстановить",
 								Hint = "Восстановить объект",
 								OnExecute = OnExecuteRestore,
-								BitmapImage = new BitmapImage(new Uri("Images/rollback_16.png", UriKind.Relative)),
+								BitmapImage = new BitmapImage(new Uri("Images/undelete_16.png", UriKind.Relative)),
 								ShowText = true
 							};
 			UserActions.Add(userActionRestore);
