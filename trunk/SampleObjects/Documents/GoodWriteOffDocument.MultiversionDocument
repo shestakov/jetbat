@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MultiversionDocumentConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodWriteOffDocument</EntityName>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>DocumentDateTime</Name>
+      <FriendlyName>DocumentDateTime</FriendlyName>
+      <UILabel>Дата документа</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Comment</Name>
+      <FriendlyName>Comment</FriendlyName>
+      <UILabel>Примечание</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>CalcDayID</Name>
+      <FriendlyName>CalcDayID</FriendlyName>
+      <UILabel>CalcDayID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>WriteOffReasonID</Name>
+      <FriendlyName>WriteOffReasonID</FriendlyName>
+      <UILabel>WriteOffReasonID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentNumber</Name>
+      <FriendlyName>DocumentNumber</FriendlyName>
+      <UILabel>Документ №</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodWriteOffDocument_MealCalc_WriteOffReason</Name>
+      <FriendlyName>FK_MealCalc_GoodWriteOffDocument_MealCalc_WriteOffReason</FriendlyName>
+      <UILabel>Причина списания</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodWriteOffDocument_MealCalc_CalcDay</Name>
+      <FriendlyName>FK_MealCalc_GoodWriteOffDocument_MealCalc_CalcDay</FriendlyName>
+      <UILabel>Учетный день</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodWriteOffDocument_MultiversionDocument_DocumentVersion</Name>
+      <FriendlyName>FK_MealCalc_GoodWriteOffDocument_MultiversionDocument_DocumentVersion</FriendlyName>
+      <UILabel>Документ</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <TableName>MealCalc_GoodWriteOffDocument</TableName>
+  <ViewName>MealCalc_GoodWriteOffDocument_View</ViewName>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <HeaderNullableColumns />
+  <MethodAfterCreate>false</MethodAfterCreate>
+  <MethodBeforeUpdateVersion>false</MethodBeforeUpdateVersion>
+  <MethodBeforeConfirmEdit>false</MethodBeforeConfirmEdit>
+  <MethodAfterConfirmEdit>false</MethodAfterConfirmEdit>
+  <MethodBeforeCommit>false</MethodBeforeCommit>
+  <MethodBeforeRollback>true</MethodBeforeRollback>
+</MultiversionDocumentConstructorSettings>

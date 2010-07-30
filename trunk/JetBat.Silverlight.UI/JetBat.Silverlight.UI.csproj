@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3CA02329-CA7A-4BFF-92AE-60788DE066ED}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBat.Silverlight.UI</RootNamespace>
+    <AssemblyName>JetBat.Silverlight.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Controls.Toolkit, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml.Serialization, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttributeEditiors\AttributeValueConverter.cs" />
+    <Compile Include="AttributeEditiors\BooleanAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\ComboBoxDataItem.cs" />
+    <Compile Include="AttributeEditiors\ComplexAttributeComboBox.cs" />
+    <Compile Include="AttributeEditiors\ComplexAttributeComboBoxDocumentListView.cs" />
+    <Compile Include="AttributeEditiors\CreateComplexAttributeEditorDelegate.cs" />
+    <Compile Include="AttributeEditiors\DateTimeAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\DecimalAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\GetPlainObjectListQualifiedNamespaceDelegate.cs" />
+    <Compile Include="AttributeEditiors\IComplexAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\Int32AttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\IObjectAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\ObjectAttributeEditor.cs" />
+    <Compile Include="AttributeEditiors\ObjectAttributeEditorFactory.cs" />
+    <Compile Include="AttributeEditiors\TextAttributeEditor.cs" />
+    <Compile Include="BulkMethodCallArguments.cs" />
+    <Compile Include="BulkMethodCallResult.cs" />
+    <Compile Include="DocumentFormMode.xaml.cs" />
+    <Compile Include="DocumentListViewGrid.xaml.cs">
+      <DependentUpon>DocumentListViewGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentEditPanel.xaml.cs">
+      <DependentUpon>DocumentEditPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentInstance.cs" />
+    <Compile Include="EditorWindow.xaml.cs">
+      <DependentUpon>EditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ExecuteMethodCompleteEventArgs.cs" />
+    <Compile Include="IAfterUpdateAttributeProcessor.xaml.cs" />
+    <Compile Include="MetadataProvider.cs" />
+    <Compile Include="Metadata\BusinessObject.cs" />
+    <Compile Include="Metadata\ComplexAttributeColumnPair.cs" />
+    <Compile Include="Metadata\Document.cs" />
+    <Compile Include="Metadata\DocumentListView.cs" />
+    <Compile Include="Metadata\InstancedObject.cs" />
+    <Compile Include="Metadata\Misc\ErrorMessage.cs" />
+    <Compile Include="Metadata\Misc\INamedObject.cs" />
+    <Compile Include="Metadata\Misc\NamedObjectCollection.cs" />
+    <Compile Include="Metadata\Misc\NamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Metadata\Misc\NameValue.cs" />
+    <Compile Include="Metadata\Misc\ObjectMethodResult.cs" />
+    <Compile Include="Metadata\Misc\SqlParameterDirection.cs" />
+    <Compile Include="Metadata\ObjectAction.cs" />
+    <Compile Include="Metadata\ObjectAttribute.cs" />
+    <Compile Include="Metadata\ObjectComplexAttribute.cs" />
+    <Compile Include="Metadata\ObjectListView.cs" />
+    <Compile Include="Metadata\ObjectMethod.cs" />
+    <Compile Include="Metadata\ObjectMethodParameter.cs" />
+    <Compile Include="Metadata\PlainObject.cs" />
+    <Compile Include="Metadata\PlainObjectListView.cs" />
+    <Compile Include="Metadata\StoredQuery.cs" />
+    <Compile Include="PlainObjectListViewGrid.xaml.cs">
+      <DependentUpon>PlainObjectListViewGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlainObjectEditPanel.xaml.cs">
+      <DependentUpon>PlainObjectEditPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlainObjectInstance.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataGridRow.cs" />
+    <Compile Include="DataGridRowIndexConverter.cs" />
+    <Compile Include="QualifiedName.cs" />
+    <Compile Include="QuickFilterPrompt.xaml.cs">
+      <DependentUpon>QuickFilterPrompt.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\WebService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="ListViewLoader.cs" />
+    <Compile Include="StaticAuthenticator.cs" />
+    <Compile Include="UserActions\UserAction.cs" />
+    <Compile Include="UserActions\UserActionButton.cs" />
+    <Compile Include="UserActions\UserActionDelegate.cs" />
+    <Compile Include="WebServiceProxyHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DocumentListViewGrid.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DocumentEditPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlainObjectListViewGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlainObjectEditPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="QuickFilterPrompt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_16.png" />
+    <Resource Include="Images\delete_16.png" />
+    <Resource Include="Images\edit_16.png" />
+    <Resource Include="Images\refresh_16.png" />
+    <Resource Include="Images\rollback_16.png" />
+    <Resource Include="Images\commit_16.png" />
+    <None Include="Service References\WebService\Service.disco" />
+    <None Include="Service References\WebService\configuration91.svcinfo" />
+    <None Include="Service References\WebService\configuration.svcinfo" />
+    <None Include="Service References\WebService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Resource Include="Images\FindHS.png" />
+    <Resource Include="Images\x.png" />
+    <Content Include="ServiceReferences.ClientConfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\WebService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WebService\JetBat.Silverlight.UI.WebService.AuthenticateResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WebService\JetBat.Silverlight.UI.WebService.BulkExecuteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WebService\JetBat.Silverlight.UI.WebService.ExecuteMethodResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WebService\JetBat.Silverlight.UI.WebService.GetObjectDefinitionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WebService\Service.wsdl" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectListViewConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>SupplierPickList</EntityName>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>Comment</Name>
+      <FriendlyName>Comment</FriendlyName>
+      <UILabel>Примечание</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Name</Name>
+      <FriendlyName>Name</FriendlyName>
+      <UILabel>Наименование</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases />
+  <ViewName>MealCalc_Supplier_PickListView</ViewName>
+  <ShowDeletedObjects>false</ShowDeletedObjects>
+  <InvisibleColumns />
+  <IgnoredColumns />
+  <UICaption>Поставщики</UICaption>
+  <TargetObjectNamespace>MealCalc</TargetObjectNamespace>
+  <TargetObjectName>Supplier</TargetObjectName>
+  <SelectionCondition />
+  <ParameterDefinitions />
+</PlainObjectListViewConstructorSettings>

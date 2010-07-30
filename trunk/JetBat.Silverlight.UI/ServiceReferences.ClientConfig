@@ -1,0 +1,20 @@
+﻿<configuration>
+    <system.serviceModel>
+        <bindings>
+            <basicHttpBinding>
+                <binding name="ServiceSoap" maxBufferSize="2147483647" maxReceivedMessageSize="2147483647">
+                    <security mode="None">
+                        <transport>
+                            <extendedProtectionPolicy policyEnforcement="Never" />
+                        </transport>
+                    </security>
+                </binding>
+            </basicHttpBinding>
+        </bindings>
+        <client>
+            <endpoint address="http://localhost:60115/WebServices/Service.asmx"
+                binding="basicHttpBinding" bindingConfiguration="ServiceSoap"
+                contract="WebService.ServiceSoap" name="ServiceSoap" />
+        </client>
+    </system.serviceModel>
+</configuration>

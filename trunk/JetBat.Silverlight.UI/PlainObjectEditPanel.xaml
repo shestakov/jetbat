@@ -1,0 +1,12 @@
+﻿<UserControl  x:Class="JetBat.Silverlight.UI.PlainObjectEditPanel"
+			  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			  MinWidth="400">
+	<Border x:Name="border"
+			BorderBrush="Black"
+			BorderThickness="1">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<StackPanel x:Name="LayoutRoot" />
+			</ScrollViewer>
+	</Border>
+</UserControl>

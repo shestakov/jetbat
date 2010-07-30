@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectListViewConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>DishCategoryList</EntityName>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>IndexNumber</Name>
+      <FriendlyName>IndexNumber</FriendlyName>
+      <UILabel>№ п/п</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Name</Name>
+      <FriendlyName>Name</FriendlyName>
+      <UILabel>Наименование</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases />
+  <ViewName>MealCalc_DishCategory_View</ViewName>
+  <ShowDeletedObjects>false</ShowDeletedObjects>
+  <InvisibleColumns />
+  <IgnoredColumns />
+  <UICaption>Категории блюд</UICaption>
+  <TargetObjectNamespace>MealCalc</TargetObjectNamespace>
+  <TargetObjectName>DishCategory</TargetObjectName>
+  <SelectionCondition />
+  <ParameterDefinitions />
+</PlainObjectListViewConstructorSettings>

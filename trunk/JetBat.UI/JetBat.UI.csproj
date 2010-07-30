@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{13B6CB2A-7F88-40C6-9AB6-97A91C79DE20}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBat.UI</RootNamespace>
+    <AssemblyName>JetBat.UI</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataControls\Forms\DataObjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectForm.Designer.cs">
+      <DependentUpon>DataObjectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectFormLite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectFormLite.Designer.cs">
+      <DependentUpon>DataObjectFormLite.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectFormStandard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectFormStandard.Designer.cs">
+      <DependentUpon>DataObjectFormStandard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectPickForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Forms\DataObjectPickForm.Designer.cs">
+      <DependentUpon>DataObjectPickForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Forms\DocumentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Forms\DocumentForm.Designer.cs">
+      <DependentUpon>DocumentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\DocumentGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\DocumentGridView.Designer.cs">
+      <DependentUpon>DocumentGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\PlainObjectGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\PlainObjectGridView.Designer.cs">
+      <DependentUpon>PlainObjectGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\Standard\DocumentGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\Standard\DocumentGridView.Designer.cs">
+      <DependentUpon>DocumentGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\Standard\PlainObjectGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\Standard\PlainObjectGridView.Designer.cs">
+      <DependentUpon>PlainObjectGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\StoredQueryGridView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\Basic\StoredQueryGridView.Designer.cs">
+      <DependentUpon>StoredQueryGridView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\DataObjectListViewGrid.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\DataObjectListViewGrid.Designer.cs">
+      <DependentUpon>DataObjectListViewGrid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\DataObjectListViewGridSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Grid\DataObjectListViewGridSettingsForm.Designer.cs">
+      <DependentUpon>DataObjectListViewGridSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Grid\GridViewColumn.cs" />
+    <Compile Include="DataControls\Grid\GridViewSettings.cs" />
+    <Compile Include="DataControls\Grid\ToolbarRenderer.cs" />
+    <Compile Include="DataControls\Messages\MessageListWindowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Messages\MessageListWindowForm.Designer.cs">
+      <DependentUpon>MessageListWindowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataControls\Messages\MessageWindowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataControls\Messages\MessageWindowForm.Designer.cs">
+      <DependentUpon>MessageWindowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputControls\Basic\BoolInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\CustomInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\DataObjectPickComboBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\DateTimeInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\DecimalInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\IntInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\LongInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\NumericInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\ShortInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\Basic\TextInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputControls\DataObjectListItem.cs" />
+    <Compile Include="InputControls\IDataObjectPickControl.cs" />
+    <Compile Include="InputControls\IDataObjectPickListControl.cs" />
+    <Compile Include="InputControls\IDecimalInput.cs" />
+    <Compile Include="InputControls\IInputControl.cs" />
+    <Compile Include="InputControls\ITextInput.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="UserActions\UserAction.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserActions\UserAction.Designer.cs">
+      <DependentUpon>UserAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserActions\UserActionCollection.cs" />
+    <Compile Include="UserActions\UserActionSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserActions\UserActionSet.Designer.cs">
+      <DependentUpon>UserActionSet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserActions\UserActionToolStripButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserActions\UserActionToolStripButton.Designer.cs">
+      <DependentUpon>UserActionToolStripButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserActions\UserActionToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserActions\UserActionToolStripMenuItem.Designer.cs">
+      <DependentUpon>UserActionToolStripMenuItem.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DataControls\Forms\DataObjectForm.resx">
+      <DependentUpon>DataObjectForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Forms\DataObjectFormLite.resx">
+      <DependentUpon>DataObjectFormLite.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Forms\DataObjectFormStandard.resx">
+      <DependentUpon>DataObjectFormStandard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Forms\DataObjectPickForm.resx">
+      <DependentUpon>DataObjectPickForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Forms\DocumentForm.resx">
+      <DependentUpon>DocumentForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\Basic\DocumentGridView.resx">
+      <DependentUpon>DocumentGridView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\Basic\PlainObjectGridView.resx">
+      <DependentUpon>PlainObjectGridView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\Basic\Standard\DocumentGridView.resx">
+      <DependentUpon>DocumentGridView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\Basic\Standard\PlainObjectGridView.resx">
+      <DependentUpon>PlainObjectGridView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\Basic\StoredQueryGridView.resx">
+      <DependentUpon>StoredQueryGridView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\DataObjectListViewGrid.resx">
+      <DependentUpon>DataObjectListViewGrid.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\DataObjectListViewGridSettingsForm.resx">
+      <DependentUpon>DataObjectListViewGridSettingsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Grid\GridViewColumn.resx">
+      <DependentUpon>GridViewColumn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Messages\MessageListWindowForm.resx">
+      <DependentUpon>MessageListWindowForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataControls\Messages\MessageWindowForm.resx">
+      <DependentUpon>MessageWindowForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\BoolInput.resx">
+      <DependentUpon>BoolInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\CustomInput.resx">
+      <DependentUpon>CustomInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\DataObjectPickComboBox.resx">
+      <DependentUpon>DataObjectPickComboBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\DateTimeInput.resx">
+      <DependentUpon>DateTimeInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\DecimalInput.resx">
+      <DependentUpon>DecimalInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\IntInput.resx">
+      <DependentUpon>IntInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\LongInput.resx">
+      <DependentUpon>LongInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\NumericInput.resx">
+      <DependentUpon>NumericInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\ShortInput.resx">
+      <DependentUpon>ShortInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputControls\Basic\TextInput.resx">
+      <DependentUpon>TextInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserActions\UserActionToolStripButton.resx">
+      <DependentUpon>UserActionToolStripButton.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserActions\UserActionToolStripMenuItem.resx">
+      <DependentUpon>UserActionToolStripMenuItem.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ADD_16.GIF" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ADD_161.GIF" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-back_16.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-down_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-up_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-up_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_16.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_32.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Edit_UndoHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Filter2HS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Fold.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FormRunHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\INFO.ICO" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Main.ico" />
+    <None Include="Resources\Webcontrol_Advancededitorpart.bmp" />
+    <None Include="Resources\warning.ico" />
+    <None Include="Resources\Unfold.bmp" />
+    <None Include="Resources\UNDO_243.PNG" />
+    <None Include="Resources\UNDO_242.PNG" />
+    <None Include="Resources\UNDO_241.PNG" />
+    <None Include="Resources\UNDO_24.PNG" />
+    <None Include="Resources\search_16.gif" />
+    <None Include="Resources\save_32.png" />
+    <None Include="Resources\save_32.ico" />
+    <None Include="Resources\save_16.png" />
+    <None Include="Resources\refresh_doc_16.gif" />
+    <None Include="Resources\print_preview_16.gif" />
+    <None Include="Resources\paste_32.png" />
+    <None Include="Resources\OK.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JetBat.Client\JetBat.Client.csproj">
+      <Project>{1C09911F-6064-468B-A8D3-5EDCCB350129}</Project>
+      <Name>JetBat.Client</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

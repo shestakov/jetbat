@@ -1,0 +1,52 @@
+﻿<UserControl xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
+			 x:Class="JetBat.Silverlight.UI.DocumentListViewGrid"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 IsEnabled="False">
+	<Border Name="borderOuter"
+			Background="White"
+			BorderBrush="Black"
+			BorderThickness="1">
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<Border Grid.Row="0"
+					Name="borderHeader">
+				<Border.Background>
+					<LinearGradientBrush StartPoint="0, 0"
+										 EndPoint="0, 1">
+						<LinearGradientBrush.GradientStops>
+							<GradientStop Offset="0"
+										  Color="White" />
+							<GradientStop Offset="0.5"
+										  Color="WhiteSmoke" />
+							<GradientStop Offset="1"
+										  Color="LightGray" />
+						</LinearGradientBrush.GradientStops>
+					</LinearGradientBrush>
+				</Border.Background>
+				<TextBlock x:Name="textBlockCaption"
+						   Text="List View Caption"
+						   FontSize="11"
+						   FontWeight="SemiBold"
+						   Foreground="Black"
+						   Padding="2" />
+			</Border>
+			<StackPanel x:Name="stackPanelToolBar"
+						Orientation="Horizontal"
+						Grid.Row="1">
+			</StackPanel>
+			<data:DataGrid x:Name="dataGrid"
+						   Grid.Row="2"
+						   HeadersVisibility="Column"
+						   IsReadOnly="True"
+						   SelectionMode="Extended"
+						   VerticalScrollBarVisibility="Auto"
+						   SelectionChanged="dataGrid_SelectionChanged"
+						   SizeChanged="dataGrid_SizeChanged"/>
+		</Grid>
+	</Border>
+</UserControl>

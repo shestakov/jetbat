@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfEnvironmentSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<EnvironmentSettings>
+		<Name>MealCalc</Name>
+		<ConnectionStringToDatabase>Data Source=.\SQLEXPRESS;Initial Catalog=TestMealCalc;Integrated Security=True;</ConnectionStringToDatabase>
+		<ConnectionStringToMetadataStore>Data Source=.\SQLEXPRESS;Initial Catalog=TestMealCalc_Metadata;Integrated Security=True;MultipleActiveResultSets=True</ConnectionStringToMetadataStore>
+		<OutputDirectory />
+		<MetadataFileDirectory />
+	</EnvironmentSettings>
+	<EnvironmentSettings>
+		<Name>OrderTracking</Name>
+		<ConnectionStringToDatabase>Data Source=.\SQLEXPRESS;Initial Catalog=OrderTracking;Integrated Security=True;</ConnectionStringToDatabase>
+		<ConnectionStringToMetadataStore>Data Source=.\SQLEXPRESS;Initial Catalog=OrderTracking_Metadata;Integrated Security=True;MultipleActiveResultSets=True</ConnectionStringToMetadataStore>
+		<OutputDirectory />
+		<MetadataFileDirectory />
+	</EnvironmentSettings>
+</ArrayOfEnvironmentSettings>

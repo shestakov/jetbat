@@ -1,0 +1,54 @@
+﻿<#@ template language="C#" #>
+
+<#@ Assembly Name="JetBat.DatabaseSchema"#>
+<#@ Import Namespace="JetBat.DatabaseSchema" #>
+SET NOCOUNT ON
+SET XACT_ABORT ON
+SET NOEXEC OFF
+USE [<#= DatabaseName #>]
+GO
+
+<#= DatabaseSchema.StoredProcedures.Contains(NamespacePrefix + "_" + EntityName + "_LoadList") ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= NamespacePrefix #>_<#= EntityName #>_LoadList
+<#
+	str_and = "	";
+	foreach(StoredProcedureParameterSchema parameterSchema in ParameterDefinitions)
+	{
+		Write(str_and + GetParameterDeclaration(parameterSchema));
+		str_and = "," + Environment.NewLine;
+	}
+	if (ParameterDefinitions.Count > 0)
+		WriteLine("");
+#>
+AS
+begin
+
+SET NOCOUNT ON;
+
+SELECT 
+<#
+	str_and = "	";
+	foreach (ViewColumnSchema column in viewSchema.Columns)
+	{
+		Write(str_and + column.Name); #><#
+		str_and = "," + Environment.NewLine + "	";
+	}
+	WriteLine("");
+#>
+FROM <#= viewSchema.Name #>
+<#
+	if (!string.IsNullOrEmpty(SelectionCondition))
+	Write(string.Format("WHERE ({0})", SelectionCondition));
+#>
+<#
+if (!string.IsNullOrEmpty(OrderBy)) WriteLine(Environment.NewLine + "ORDER BY " + OrderBy);
+#>
+
+end
+GO
+
+IF (@@ERROR != 0)
+BEGIN
+	RAISERROR('При создании хранимой процедуры произошло ошибка', 11, 1)
+	SET NOEXEC ON
+END
+GO

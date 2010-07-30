@@ -1,0 +1,2823 @@
+﻿<#@ template language="C#" #>
+
+<#@ Assembly Name="JetBat.DatabaseSchema"#>
+<#@ Import Namespace="JetBat.DatabaseSchema" #>
+SET NOCOUNT ON
+SET NOEXEC OFF
+USE [<#= DatabaseName #>]
+GO
+
+--region Делегаты
+
+--region BeforeInsert
+<#
+if (BeforeInsert)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeInsert") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("BeforeInsert") #>]
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, true));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, true));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, true));
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+AS
+BEGIN
+--	DECLARE @ErrorList TABLE
+--	(
+--		Message VARCHAR(2000),
+--		AttributeName VARCHAR(128) NULL,
+--		AttributeFriendlyName VARCHAR(200) NULL,
+--		Severity INT
+--	)
+
+--	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+
+--SET @ErrorMessages =
+--(
+--	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--	FROM @ErrorList AS EL
+--	ORDER BY EL.Severity DESC, EL.AttributeName
+--	FOR XML RAW(''row''), ROOT (''root'')
+--)
+
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--region AfterInsert
+<#
+if (AfterInsert)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterInsert") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("AfterInsert") #>]
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, false));
+				str_and = "," + Environment.NewLine;
+			}
+		Write(Environment.NewLine);
+	#>
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--endregion 
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Insert")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("Insert") #>
+(
+	--region Объявление параметров
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, column.IsIdentity));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, true));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, false));
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+--endregion
+
+--region Вызов BeforeInsert
+<#
+if (BeforeInsert)
+{
+#>
+BEGIN TRY
+	EXEC dbo.<#= GetProcedureName("BeforeInsert") #>
+<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+		@ErrorMessages = @ErrorMessages OUTPUT
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+
+INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+	b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+	b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+	b.value('@Severity' , 'int') as СуровостьОшибки
+FROM @ErrorMessages.nodes('/root/row') a(b)
+
+IF (SELECT COUNT(0) FROM @ErrorList WHERE Severity > 1) > 0
+BEGIN
+	SET @ErrorMessages =
+	(
+		SELECT Message, AttributeName, AttributeFriendlyName, Severity
+		FROM @ErrorList AS EL
+		ORDER BY EL.Severity DESC, EL.AttributeName
+		FOR XML RAW('row'), ROOT ('root')
+	)
+	RETURN -1
+END
+<#
+}
+#>
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров первичного ключа
+	<#
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			if (!column.IsIdentity) //specific for insert
+			{
+			#>
+	IF @<#= column.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+		'<#= column.Name #>',
+		'<#= this.GetAttributeAlias(column.Name) #>',
+		2
+			<#
+			}
+	#>
+	--endregion
+
+	--region Проверка заполнения параметра метки даты и времени
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+		#>
+	IF @<#= dateTimeMarkColumnSchema.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		'<#= dateTimeMarkColumnSchema.Name #>',
+		'<#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		2
+		<#
+		}
+	#>
+	--endregion
+
+	--region Проверка заполнения параметров информативных атрибутов
+	<#
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				!column.IsPrimaryKeyMember &&
+				!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+				!column.IsForeignKeyMember &&
+				viewSchema.Columns.Contains(column.Name) &&
+				!ColumnIsIgnored(column.Name) &&
+				!ColumnIsReadOnly(column.Name) &&
+				!ColumnAllowsDBNull(column.Name)
+			)
+			{
+	#>
+	IF (@<#= column.Name #> IS NULL) --AND ((SELECT IsNullable FROM Metadata_ObjectAttribute WHERE Name = '<#= column.Name #>' AND ObjectID = @ObjectID) != 1)
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+			'<#= column.Name #>',
+			'<#= this.GetAttributeAlias(column.Name) #>',
+			2
+	<#
+			}
+	#>
+	--endregion
+	
+	--region Проверка заполнения параметров составных атрибутов
+	<#
+	foreach	(ForeignKeySchema fk in tableSchema.OutgoingForeignKeys)
+	{
+		bool read_only = false;
+		foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+		{
+			if (ColumnIsIgnored(fk_column.ForeignKeyColumnName) || ColumnIsReadOnly(fk_column.ForeignKeyColumnName))
+			{
+				read_only = true;
+				break;
+			}
+		}
+		
+		bool required = false;
+		foreach (ForeignKeyColumnPairSchema column in fk.ColumnPairs)
+			if (!fk.ChildTable.Columns[column.ForeignKeyColumnName].AllowNull)
+			{
+				required = true;
+				break;
+			}
+			
+		if (!read_only && required && ForeignKeyIsIncludedIntoView2(fk))
+		{
+			str_and = "";
+	#>
+	IF
+	(
+		<#
+			foreach (ForeignKeyColumnPairSchema column in fk.ColumnPairs)
+			{
+				Write(str_and + "		@" + column.ForeignKeyColumnName + " IS NULL");
+				str_and = " OR" + Environment.NewLine;
+			}
+			WriteLine("");
+		#>
+	)
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Не задано значение атрибута - ссылки: <#= this.GetComplexAttributeAlias(fk.Name) #>',
+			'<#= fk.Name #>',
+			'<#= this.GetComplexAttributeAlias(fk.Name) #>',
+			2
+	<#
+		}
+	}
+	#>
+	--endregion
+	
+	--region Проверка корректности ссылок
+	<#
+		foreach (ForeignKeySchema fk in tableSchema.OutgoingForeignKeys)
+		{
+			bool read_only = false;
+			foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+			{
+				if (ColumnIsIgnored(fk_column.ForeignKeyColumnName) || ColumnIsReadOnly(fk_column.ForeignKeyColumnName))
+				{
+					read_only = true;
+					break;
+				}
+			}
+			
+			if (!read_only && ForeignKeyIsIncludedIntoView2(fk))
+			{
+		#>
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= fk.ParentTableName #> WHERE
+		(
+			<#
+				str_and = "";
+				foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+				{
+					Write(str_and + fk.ParentTableName + "." + fk_column.PrimaryKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	) AND
+	(
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+			{
+				Write(str_and + "@" + fk_column.ForeignKeyColumnName + " IS NOT NULL");
+				str_and = " OR";
+			}
+			WriteLine("");
+		#>
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Некорректная ссылка: <#= this.GetComplexAttributeAlias(fk.Name) #>',
+			'<#= fk.Name #>',
+			'<#= this.GetComplexAttributeAlias(fk.Name) #>',
+			2
+	END
+	<#
+			}
+		}
+	#>
+	--endregion
+
+	--region Проверка уникальности для процедуры создания
+	--endregion
+	
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	--region Обработка порядкового номера
+	<#
+		if (foreignKeyToParentSchema != null && sequenceNumberColumnSchema != null)
+		{
+	#>
+	DECLARE @DesiredSquenceNumber INT
+	DECLARE @MaxSquenceNumber INT
+	
+	SET @DesiredSquenceNumber = @<#= sequenceNumberColumnSchema.Name #>
+	SELECT @MaxSquenceNumber = ISNULL(MAX(<#= sequenceNumberColumnSchema.Name #>), 0) FROM <#= tableSchema.Name #> WHERE
+	(
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+			{
+				Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	
+	IF @DesiredSquenceNumber IS NULL OR @DesiredSquenceNumber > @MaxSquenceNumber SET @DesiredSquenceNumber = @MaxSquenceNumber + 1
+	IF @DesiredSquenceNumber < 1 SET @DesiredSquenceNumber = 1
+	
+	SET @<#= sequenceNumberColumnSchema.Name #> = @DesiredSquenceNumber
+	
+	UPDATE <#= tableSchema.Name #> SET
+		<#= sequenceNumberColumnSchema.Name #> = <#= sequenceNumberColumnSchema.Name #> + 1
+	WHERE
+	(
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+			str_and = "AND ";
+		}
+		WriteLine("");
+	#>
+	) AND
+	<#= sequenceNumberColumnSchema.Name #> >= @DesiredSquenceNumber
+	<#
+		}
+	#>
+	--endregion
+
+	--region Добавление записи
+	<#
+		if (dateTimeMarkColumnSchema != null)
+			Write("SET @" + dateTimeMarkColumnSchema.Name + " = GETDATE()");
+	#>
+	
+	INSERT INTO <#= tableSchema.Name #>
+	(
+	<#
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(column.IsPrimaryKeyMember && !column.IsIdentity) || //Первичный ключ
+				(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) || //Метка даты и времени
+				(
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				) //Информативные атрибуты
+			)
+			{
+				Write(str_and + "	" + column.Name);
+				str_and = "," + Environment.NewLine + "	";
+			}			
+		if (statusColumnSchema != null)
+		{
+			Write(str_and + "	" + statusColumnSchema.Name);
+			str_and = "," + Environment.NewLine + "	";
+		}
+
+		Write(Environment.NewLine);
+	#>
+	)
+	VALUES
+	(
+	<#
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(column.IsPrimaryKeyMember && !column.IsIdentity) || //Первичный ключ
+				(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) || //Метка даты и времени
+				(
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				) //Информативные атрибуты
+			)
+			{
+				Write(str_and + "	@" + column.Name);
+				str_and = "," + Environment.NewLine + "	";
+			}
+		if (statusColumnSchema != null)
+		{
+			Write(str_and + "	" + InitialStatusValue);
+			str_and = "," + Environment.NewLine + "	";
+		}
+
+		Write(Environment.NewLine);
+	#>
+	)
+	
+	<#
+		if (TableHasIdentity())
+		{
+			Write("SET @" + GetIdentityColumnName() + " = SCOPE_IDENTITY()");
+		}
+	#>
+	
+	--endregion
+	
+	--region Вызов AfterInsert
+	<#
+	if (AfterInsert)
+	{
+	#>
+	BEGIN TRY
+		EXEC dbo.<#= GetProcedureName("AfterInsert") #>
+		<#
+			//Первичный ключ
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			{
+				Write(str_and + "		@" + column.Name + " = @" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+	
+			//Метка даты и времени
+			if (dateTimeMarkColumnSchema != null)
+			{
+				Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name);
+				str_and = "," + Environment.NewLine;
+			}
+			
+			//Информативные параметры
+			str_and = "," + Environment.NewLine;
+			foreach (TableColumnSchema column in tableSchema.Columns)
+				if
+				(
+					(
+						!column.IsPrimaryKeyMember &&
+						!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+						viewSchema.Columns.Contains(column.Name) &&
+						!ColumnIsIgnored(column.Name) &&
+						!ColumnIsReadOnly(column.Name)
+					)
+				)
+				{
+					Write(str_and + "		@" + column.Name + " = @" + column.Name);
+					str_and = "," + Environment.NewLine;
+				}
+			Write(Environment.NewLine);
+		#>
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorMessage = ERROR_MESSAGE(),
+			@ErrorSeverity = ERROR_SEVERITY(),
+			@ErrorState = ERROR_STATE();
+		
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+		RETURN(-1)
+	END CATCH
+	<#
+	}
+	#>
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRANSACTION;
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList AS EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+	
+GO
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+--region Делегаты
+
+--region BeforeUpdate
+<#
+if (BeforeUpdate)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeUpdate") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("BeforeUpdate") #>]
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, true));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, true));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, true));
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+AS
+BEGIN
+--	DECLARE @ErrorList TABLE
+--	(
+--		Message VARCHAR(2000),
+--		AttributeName VARCHAR(128) NULL,
+--		AttributeFriendlyName VARCHAR(200) NULL,
+--		Severity INT
+--	)
+
+--	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+
+--SET @ErrorMessages =
+--(
+--	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--	FROM @ErrorList AS EL
+--	ORDER BY EL.Severity DESC, EL.AttributeName
+--	FOR XML RAW(''row''), ROOT (''root'')
+--)
+
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--region AfterUpdate
+<#
+if (AfterUpdate)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterUpdate") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("AfterUpdate") #>]
+<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, false));
+				str_and = "," + Environment.NewLine;
+			}
+		Write(Environment.NewLine);
+	#>
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--endregion 
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Update")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("Update") #>
+(
+	--region Объявление параметров
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration2(column, false));
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000);
+DECLARE @ErrorSeverity INT;
+DECLARE @ErrorState INT;
+DECLARE @КодОшибки INT
+DECLARE @ВременныйСписокОшибок XML
+--endregion
+
+--region Вызов BeforeUpdate
+<#
+if (BeforeUpdate)
+{
+#>
+BEGIN TRY
+	EXEC dbo.<#= GetProcedureName("BeforeUpdate") #>
+<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				(
+					!column.IsPrimaryKeyMember &&
+					!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					viewSchema.Columns.Contains(column.Name) &&
+					!ColumnIsIgnored(column.Name) &&
+					!ColumnIsReadOnly(column.Name)
+				)
+			)
+			{
+				Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+		@ErrorMessages = @ErrorMessages OUTPUT
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+
+INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+	b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+	b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+	b.value('@Severity' , 'int') as СуровостьОшибки
+FROM @ErrorMessages.nodes('/root/row') a(b)
+
+IF (SELECT COUNT(0) FROM @ErrorList WHERE Severity > 1) > 0
+BEGIN
+	SET @ErrorMessages =
+	(
+		SELECT Message, AttributeName, AttributeFriendlyName, Severity
+		FROM @ErrorList AS EL
+		ORDER BY EL.Severity DESC, EL.AttributeName
+		FOR XML RAW('row'), ROOT ('root')
+	)
+	RETURN -1
+END
+<#
+}
+#>
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров первичного ключа
+	<#
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			if (!column.IsIdentity) //specific for insert
+			{
+			#>
+	IF @<#= column.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+		'<#= column.Name #>',
+		'<#= this.GetAttributeAlias(column.Name) #>',
+		2
+	
+			<#
+			}
+	#>
+	--endregion
+
+	--region Проверка заполнения параметра метки даты и времени
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+		#>
+	IF @<#= dateTimeMarkColumnSchema.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		'<#= dateTimeMarkColumnSchema.Name #>',
+		'<#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		2
+		<#
+		}
+	#>
+	--endregion
+
+	--region Проверка существования объекта
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= tableSchema.Name #> WHERE
+		(	
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "			" + column.Name + " = @" +column.Name);
+					str_and = " AND" + Environment.NewLine;
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Объект не найден: <#= "[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+
+	--region Проверка заполнения параметров информативных атрибутов
+	<#
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				!column.IsPrimaryKeyMember &&
+				!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+				!column.IsForeignKeyMember &&
+				(viewSchema.Columns.Contains(column.Name)) &&
+				!ColumnIsIgnored(column.Name) &&
+				!ColumnIsReadOnly(column.Name) &&
+				!ColumnAllowsDBNull(column.Name)
+			)
+			{
+	#>
+	IF (@<#= column.Name #> IS NULL) --AND ((SELECT IsNullable FROM Metadata_ObjectAttribute WHERE Name = '<#= column.Name #>' AND ObjectID = @ObjectID) != 1)
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+			'<#= column.Name #>',
+			'<#= this.GetAttributeAlias(column.Name) #>',
+			2
+	<#
+			}
+	#>
+	--endregion
+	
+	--region Проверка заполнения параметров составных атрибутов
+	<#
+	foreach	(ForeignKeySchema fk in tableSchema.OutgoingForeignKeys)
+	{		bool read_only = false;
+		foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+		{
+			if (ColumnIsIgnored(fk_column.ForeignKeyColumnName) || ColumnIsReadOnly(fk_column.ForeignKeyColumnName))
+			{
+				read_only = true;
+				break;
+			}
+		}
+		
+		bool required = false;
+		foreach (ForeignKeyColumnPairSchema column in fk.ColumnPairs)
+			if (!fk.ChildTable[column.ForeignKeyColumnName].AllowNull)
+			{
+				required = true;
+				break;
+			}
+			
+		if (!read_only && required && ForeignKeyIsIncludedIntoView2(fk))
+		{
+			str_and = "";
+	#>
+	IF
+	(
+		<#
+			foreach (ForeignKeyColumnPairSchema column in fk.ColumnPairs)
+			{
+				Write(str_and + "		@" + column.ForeignKeyColumnName + " IS NULL");
+				str_and = " OR" + Environment.NewLine;
+			}
+			WriteLine("");
+		#>
+	)
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Не задано значение атрибута - ссылки: <#= this.GetComplexAttributeAlias(fk.Name) #>',
+			'<#= fk.Name #>',
+			'<#= this.GetComplexAttributeAlias(fk.Name) #>',
+			2
+	<#
+		}
+	}
+	#>
+	--endregion
+
+	--region Проверка корректности ссылок
+	<#
+		foreach (ForeignKeySchema fk in tableSchema.OutgoingForeignKeys)
+		{
+			bool read_only = false;
+			foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+			{
+				if (ColumnIsIgnored(fk_column.ForeignKeyColumnName) || ColumnIsReadOnly(fk_column.ForeignKeyColumnName))
+				{
+					read_only = true;
+					break;
+				}
+			}
+			
+			if (!read_only && ForeignKeyIsIncludedIntoView2(fk))
+			{
+		#>
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= fk.ParentTableName #> WHERE
+		(
+			<#
+				str_and = "";
+				foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+				{
+					Write(str_and + fk.ParentTableName + "." + fk_column.PrimaryKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	) AND
+	(
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema fk_column in fk.ColumnPairs)
+			{
+				Write(str_and + "@" + fk_column.ForeignKeyColumnName + " IS NOT NULL");
+				str_and = " OR";
+			}
+			WriteLine("");
+		#>
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Некорректная ссылка: <#= this.GetComplexAttributeAlias(fk.Name) #>',
+			'<#= fk.Name #>',
+			'<#= this.GetComplexAttributeAlias(fk.Name) #>',
+			2
+	END
+	<#
+			}
+		}
+	#>
+	--endregion
+
+	--region Проверка оптимистичной блокировки
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+	#>
+	DECLARE @old_<#= dateTimeMarkColumnSchema.Name #> DATETIME
+	
+	SELECT @old_<#= dateTimeMarkColumnSchema.Name #> = <#= dateTimeMarkColumnSchema.Name #>
+	FROM <#= tableSchema.Name #> WHERE
+	(
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "		" + column.Name + " = @" +column.Name);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+	)
+	
+	IF @<#= dateTimeMarkColumnSchema.Name #> != @old_<#= dateTimeMarkColumnSchema.Name #>
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Ошибка при изменении записи: параметры объекта были изменены другим пользователем: <#="[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END		
+	<#
+		}
+	#>
+	--endregion
+
+	--region Проверка уникальности для процедуры изменения
+	--endregion
+	
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+	
+	--region Обработка порядкового номера
+	<#
+		if (this.foreignKeyToParentSchema != null && this.sequenceNumberColumnSchema != null)
+		{
+	#>
+	DECLARE @DesiredSquenceNumber INT
+	DECLARE @OldSquenceNumber INT
+	DECLARE @MaxSquenceNumber INT
+	
+	SET @DesiredSquenceNumber = @<#= sequenceNumberColumnSchema.Name #>
+	
+	SELECT @OldSquenceNumber = <#= sequenceNumberColumnSchema.Name #> FROM <#= tableSchema.Name #>
+	WHERE
+	(
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey) 
+			{
+				Write(str_and + "		" + column.Name + " = @" + column.Name);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	
+	SELECT @MaxSquenceNumber = ISNULL(MAX(<#= sequenceNumberColumnSchema.Name #>), 0) FROM <#= tableSchema.Name #> WHERE
+	(
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+			{
+				Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	
+	IF @DesiredSquenceNumber IS NULL OR @DesiredSquenceNumber > @MaxSquenceNumber SET @DesiredSquenceNumber = @MaxSquenceNumber + 1
+	IF @DesiredSquenceNumber < 1 SET @DesiredSquenceNumber = 1
+	
+	SET @<#= sequenceNumberColumnSchema.Name #> = @DesiredSquenceNumber
+	
+	--коррекция номеров, больших старого порядкового номера
+	UPDATE <#= tableSchema.Name #> SET
+		<#= sequenceNumberColumnSchema.Name #> = <#= sequenceNumberColumnSchema.Name #> - 1
+	WHERE
+	(
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+			str_and = "AND ";
+		}
+		WriteLine("");
+	#>
+	) AND
+	<#= sequenceNumberColumnSchema.Name #> >= @OldSquenceNumber
+	
+	--коррекция номеров больше нового порядкового номера
+	UPDATE <#= tableSchema.Name #> SET
+		<#= sequenceNumberColumnSchema.Name #> = <#= sequenceNumberColumnSchema.Name #> + 1
+	WHERE
+	(
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+			str_and = "AND ";
+		}
+		WriteLine("");
+	#>
+	) AND
+	<#= sequenceNumberColumnSchema.Name #> >= @DesiredSquenceNumber
+	<#
+		}
+	#>
+	--endregion
+	
+	--region Внесение изменений
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{ 
+			Write("	SET @" + dateTimeMarkColumnSchema.Name + " = GETDATE()");
+		}
+		WriteLine("");
+	#>
+
+	UPDATE <#= tableSchema.Name #> SET
+	<#
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				!column.IsPrimaryKeyMember &&
+				viewSchema.Columns.Contains(column.Name) &&
+				(!ColumnIsIgnored(column.Name)) &&
+				(!ColumnIsReadOnly(column.Name))
+			)
+			{
+				Write(str_and + "	" + column.Name + " = @" + column.Name);
+				str_and = "," + Environment.NewLine + "	";
+			}
+		WriteLine("");
+	#>
+	WHERE
+	(
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey) 
+			{
+				Write(str_and + "		" + column.Name + " = @" + column.Name);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	--endregion
+	
+	--region Вызов AfterUpdate
+	<#
+	if (AfterUpdate)
+	{
+	#>
+	BEGIN TRY
+		EXEC dbo.<#= GetProcedureName("AfterUpdate") #>
+		<#
+			//Первичный ключ
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			{
+				Write(str_and + "		@" + column.Name + " = @" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+	
+			//Метка даты и времени
+			if (dateTimeMarkColumnSchema != null)
+			{
+				Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name);
+				str_and = "," + Environment.NewLine;
+			}
+			
+			//Информативные параметры
+			str_and = "," + Environment.NewLine;
+			foreach (TableColumnSchema column in tableSchema.Columns)
+				if
+				(
+					(
+						!column.IsPrimaryKeyMember &&
+						!(dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+						viewSchema.Columns.Contains(column.Name) &&
+						!ColumnIsIgnored(column.Name) &&
+						!ColumnIsReadOnly(column.Name)
+					)
+				)
+				{
+					Write(str_and + "		@" + column.Name + " = @" + column.Name);
+					str_and = "," + Environment.NewLine;
+				}
+			Write(Environment.NewLine);
+		#>
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorMessage = ERROR_MESSAGE(),
+			@ErrorSeverity = ERROR_SEVERITY(),
+			@ErrorState = ERROR_STATE();
+		
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+		RETURN(-1)
+	END CATCH
+	<#
+	}
+	#>
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() != 0
+    BEGIN
+        ROLLBACK TRANSACTION;
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+GO	
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+--region Делегаты
+
+--region BeforeDelete
+<#
+if (BeforeDelete)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeDelete") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("BeforeDelete") #>]
+	<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(column, true));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, true));
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--region AfterDelete
+<#
+if (AfterDelete)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterDelete") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("AfterDelete") #>]
+	<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		Write(Environment.NewLine);
+	#>
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--endregion 
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Delete")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("Delete") #>
+(
+	--region Объявление параметров
+	<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000);
+DECLARE @ErrorSeverity INT;
+DECLARE @ErrorState INT;
+DECLARE @КодОшибки INT
+DECLARE @ВременныйСписокОшибок XML
+--endregion
+
+--region Вызов BeforeDelete
+<#
+if (BeforeDelete)
+{
+#>
+BEGIN TRY
+	EXEC dbo.<#= GetProcedureName("BeforeDelete") #>
+<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name + " OUTPUT");
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+		@ErrorMessages = @ErrorMessages OUTPUT
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+
+INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+	b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+	b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+	b.value('@Severity' , 'int') as СуровостьОшибки
+FROM @ErrorMessages.nodes('/root/row') a(b)
+
+IF (SELECT COUNT(0) FROM @ErrorList WHERE Severity > 1) > 0
+BEGIN
+	SET @ErrorMessages =
+	(
+		SELECT Message, AttributeName, AttributeFriendlyName, Severity
+		FROM @ErrorList AS EL
+		ORDER BY EL.Severity DESC, EL.AttributeName
+		FOR XML RAW('row'), ROOT ('root')
+	)
+	RETURN -1
+END
+<#
+}
+#>
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров первичного ключа
+	<#
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			if (!column.IsIdentity) //specific for insert
+			{
+			#>
+	IF @<#= column.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+		'<#= column.Name #>',
+		'<#= this.GetAttributeAlias(column.Name) #>',
+		2
+	
+			<#
+			}
+	#>
+	--endregion
+
+	--region Проверка заполнения параметра метки даты и времени
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+		#>
+	IF @<#= dateTimeMarkColumnSchema.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		'<#= dateTimeMarkColumnSchema.Name #>',
+		'<#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		2
+		<#
+		}
+	#>
+	--endregion
+
+	--region Проверка существования объекта
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= tableSchema.Name #> WHERE
+		(	
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "			" + column.Name + " = @" +column.Name);
+					str_and = " AND" +  Environment.NewLine;
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Объект не найден: <#= "[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+
+	--region Проверка оптимистичной блокировки
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+	#>
+	DECLARE @old_<#= dateTimeMarkColumnSchema.Name #> DATETIME
+	
+	SELECT @old_<#= dateTimeMarkColumnSchema.Name #> = <#= dateTimeMarkColumnSchema.Name #>
+	FROM <#= tableSchema.Name #> WHERE
+	(
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "		" + column.Name + " = @" +column.Name);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+	)
+	
+	IF @<#= dateTimeMarkColumnSchema.Name #> != @old_<#= dateTimeMarkColumnSchema.Name #>
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Ошибка при изменении записи: параметры объекта были изменены другим пользователем: <#="[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END		
+	<#
+		}
+	#>
+	--endregion
+	
+	--region Проверка ссылок при физическом удалении
+	<#
+		if (this.deleteFlagColumnSchema == null)
+		{
+			foreach (ForeignKeySchema key in tableSchema.IncomingForeignKeys)
+			{
+	#>
+	IF EXISTS 
+	(
+		SELECT 0 FROM <#= key.ChildTableName #>
+			INNER JOIN <#= key.ParentTableName #> ON
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema column in key.ColumnPairs)
+			{
+				Write(str_and + "				" + key.ChildTableName + "." + column.ForeignKeyColumnName + " = " + key.ParentTableName + "." + column.PrimaryKeyColumnName);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+		WHERE
+		(
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "			" + key.ParentTableName + "." + column.Name + " = @" + column.Name);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Ошибка удаления: нельзя удалить объект, поскольку существуют другие объекты, ссылающиеся на него (таблица <#= key.ParentTableName #>).',
+			NULL,
+			NULL,
+			2
+	END
+	
+	<#
+			}
+		}
+	#>
+	--endregion
+
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	--region Обработка порядкового номера
+	<#
+		if (this.foreignKeyToParentSchema != null && this.sequenceNumberColumnSchema != null)
+		{
+	#>
+	DECLARE @OldSquenceNumber INT
+	
+	SELECT @OldSquenceNumber = <#= sequenceNumberColumnSchema.Name #> FROM <#= tableSchema.Name #>
+	WHERE
+	(
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey) 
+			{
+				Write(str_and + "		" + column.Name + " = @" + column.Name);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	
+	--коррекция номеров, больших старого порядкового номера
+	UPDATE <#= tableSchema.Name #> SET
+		<#= tableSchema.Name #>.<#= sequenceNumberColumnSchema.Name #> = <#= tableSchema.Name #>.<#= sequenceNumberColumnSchema.Name #> - 1
+	FROM <#= tableSchema.Name #>
+		INNER JOIN <#= tableSchema.Name #> AS SiblingTable
+	ON
+	(
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = SiblingTable." + fk_column.ForeignKeyColumnName);
+			str_and = "AND ";
+		}
+		WriteLine("");
+	#>
+	)
+	WHERE
+	(	
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			{
+		#>
+			<#= str_and + "SiblingTable." + column.Name #> = @<#= column.Name #>
+		<#
+				str_and = "AND ";
+			}
+		#>
+	) AND
+	<#= tableSchema.Name #>.<#= sequenceNumberColumnSchema.Name #> >= @OldSquenceNumber
+	
+	<#
+	}
+	#>
+	--endregion
+
+	--region Физическое или логическое удаление объекта
+	<#
+		if (this.deleteFlagColumnSchema != null)
+		{
+	#>
+	UPDATE <#= tableSchema.Name #> SET <#= deleteFlagColumnSchema.Name #> = 1
+	WHERE
+	(	
+		<#str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey) {#>
+		<#= str_and + column.Name #> = @<#= column.Name #>
+		<#str_and = "AND ";}#>
+	)	
+	<#
+			}
+		else
+		{
+			
+	#>		
+	DELETE FROM <#= tableSchema.Name #> WHERE
+	(	
+		<#str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey) {#>
+		<#= str_and + column.Name #> = @<#= column.Name #>
+		<#str_and = "AND ";}#>
+	)
+	<#
+			}
+	#>
+	--endregion
+	
+	--region Вызов AfterDelete
+	<#
+	if (AfterDelete)
+	{
+	#>
+	BEGIN TRY
+		EXEC dbo.<#= GetProcedureName("AfterDelete") #>
+		<#
+			//Первичный ключ
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			{
+				Write(str_and + "		@" + column.Name + " = @" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+	
+			//Метка даты и времени
+			if (dateTimeMarkColumnSchema != null)
+			{
+				Write(str_and + "		@" + dateTimeMarkColumnSchema.Name + " = @" + dateTimeMarkColumnSchema.Name);
+				str_and = "," + Environment.NewLine;
+			}
+			Write(Environment.NewLine);
+		#>
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorMessage = ERROR_MESSAGE(),
+			@ErrorSeverity = ERROR_SEVERITY(),
+			@ErrorState = ERROR_STATE();
+		
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+		RETURN(-1)
+	END CATCH
+	<#
+	}
+	#>
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRANSACTION
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+GO
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Load")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("Load") #>
+(
+	--region Объявление параметров
+	<#
+		//Первичный ключ
+		str_and = "	";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, true));
+			str_and = "," + Environment.NewLine;
+		}
+		
+		//Информативные параметры
+		str_and = "," + Environment.NewLine;
+		foreach (ViewColumnSchema column in viewSchema.Columns)
+			if
+			(
+				(
+					!tableSchema.PrimaryKey.Contains(column.Name) &&
+					!(this.dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name) &&
+					!ColumnIsIgnored(column.Name)
+				)
+			)
+			{
+				Write(str_and + "	" + GetParameterDeclaration(column, true));
+				str_and = "," + Environment.NewLine;
+			}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000);
+DECLARE @ErrorSeverity INT;
+DECLARE @ErrorState INT;
+DECLARE @КодОшибки INT
+DECLARE @ВременныйСписокОшибок XML
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров первичного ключа
+	<#
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			if (!column.IsIdentity) //specific for insert
+			{
+			#>
+	IF @<#= column.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+		'<#= column.Name #>',
+		'<#= this.GetAttributeAlias(column.Name) #>',
+		2
+	
+			<#
+			}
+	#>
+	--endregion
+
+	--region Проверка существования объекта
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= tableSchema.Name #> WHERE
+		(	
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "			" + column.Name + " = @" +column.Name);
+					str_and = " AND" + Environment.NewLine;
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Объект не найден: <#= "[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+
+	--region Загрузка объекта
+	SELECT 
+	<#
+		str_and = "	";
+		foreach (ViewColumnSchema column in viewSchema.Columns)
+		if (!tableSchema.PrimaryKey.Contains(column.Name)) 
+		{
+			Write(str_and + "	@" + column.Name + " = " + column.Name); #><#
+			str_and = "," + Environment.NewLine + "	";
+		}
+	#>
+	FROM <#= viewSchema.Name #> WHERE
+	(	
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			{
+				Write(str_and + "		" + column.Name + " = @" + column.Name);
+				str_and = " AND" + Environment.NewLine;
+			}
+			Write(Environment.NewLine);
+		#>
+	)
+	--endregion
+	
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+
+GO
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+--region Делегаты
+
+--region BeforeRestore
+<#
+if (BeforeRestore)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeRestore") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("BeforeRestore") #>]
+<#
+	str_and = "";
+	foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+	{
+		Write(str_and + "	" + GetParameterDeclaration2(column, true));
+		str_and = "," + Environment.NewLine;
+	}
+	Write("," + Environment.NewLine);
+#>
+	@СписокОшибок VARCHAR(MAX) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--region AfterRestore
+<#
+if (AfterRestore)
+{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterRestore") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE [dbo].[<#= GetProcedureName("AfterRestore") #>]
+<#
+	str_and = "";
+	foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+	{
+		Write(str_and + "	" + GetParameterDeclaration2(column, false));
+		str_and = "," + Environment.NewLine;
+	}
+	Write(Environment.NewLine);
+#>
+AS
+BEGIN
+	SET NOCOUNT ON
+	RETURN 0
+END
+')
+GO
+<#
+}
+#>
+--endregion
+
+--endregion
+
+<#
+if (Restore)
+{
+#>
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Restore")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("Restore") #>
+(
+	--region Объявление параметров
+	<#
+		//Первичный ключ
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(column, false));
+			str_and = "," + Environment.NewLine;
+		}
+
+		//Метка даты и времени
+		if (dateTimeMarkColumnSchema != null)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(dateTimeMarkColumnSchema, false));
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000);
+DECLARE @ErrorSeverity INT;
+DECLARE @ErrorState INT;
+DECLARE @КодОшибки INT
+DECLARE @ВременныйСписокОшибок XML
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров первичного ключа
+	<#
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+			if (!column.IsIdentity) //specific for insert
+			{
+			#>
+	IF @<#= column.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(column.Name) #>',
+		'<#= column.Name #>',
+		'<#= this.GetAttributeAlias(column.Name) #>',
+		2
+	
+			<#
+			}
+	#>
+	--endregion
+
+	--region Проверка заполнения параметра метки даты и времени
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+		#>
+	IF @<#= dateTimeMarkColumnSchema.Name #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение атрибута: <#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		'<#= dateTimeMarkColumnSchema.Name #>',
+		'<#= this.GetAttributeAlias(dateTimeMarkColumnSchema.Name) #>',
+		2
+		<#
+		}
+	#>
+	--endregion
+
+	--region Проверка существования объекта
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= tableSchema.Name #> WHERE
+		(	
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "			" + column.Name + " = @" +column.Name);
+					str_and = " AND" +  Environment.NewLine;
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Объект не найден: <#= "[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+
+	--region Проверка оптимистичной блокировки
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+	#>
+	DECLARE @old_<#= dateTimeMarkColumnSchema.Name #> DATETIME
+	
+	SELECT @old_<#= dateTimeMarkColumnSchema.Name #> = <#= dateTimeMarkColumnSchema.Name #>
+	FROM <#= tableSchema.Name #> WHERE
+	(
+			<#
+				str_and = "";
+				foreach (TableColumnSchema column in tableSchema.PrimaryKey)
+				{
+					Write(str_and + "		" + column.Name + " = @" +column.Name);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+	)
+	
+	IF @<#= dateTimeMarkColumnSchema.Name #> != @old_<#= dateTimeMarkColumnSchema.Name #>
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Ошибка при изменении записи: параметры объекта были изменены другим пользователем: <#="[" + EntityNamespace + "] " + GetEntityName()#>',
+			NULL,
+			NULL,
+			2
+	END		
+	<#
+		}
+	#>
+	--endregion
+	
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	--region Обработка порядкового номера
+	<#
+		if (this.foreignKeyToParentSchema != null && this.sequenceNumberColumnSchema != null)
+		{
+	#>
+	DECLARE @MaxSquenceNumber INT
+	
+	SELECT @MaxSquenceNumber = ISNULL(MAX(<#= sequenceNumberColumnSchema.Name #>), 0) FROM <#= tableSchema.Name #> WHERE
+	(
+		<#
+			str_and = "";
+			foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+			{
+				Write(str_and + "		" + tableSchema.Name + "." + fk_column.ForeignKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+				str_and = "AND ";
+			}
+			WriteLine("");
+		#>
+	)
+	
+	UPDATE <#= tableSchema.Name #> SET
+		<#= tableSchema.Name #>.<#= sequenceNumberColumnSchema.Name #> = @MaxSquenceNumber + 1
+	WHERE
+	(	
+		<#str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey) {#>
+		<#= str_and + column.Name #> = @<#= column.Name #>
+		<#str_and = "AND ";}#>
+	)
+	<#
+		}
+	#>
+	--endregion
+
+	--region логическое восстановление объекта
+	UPDATE <#= tableSchema.Name #> SET <#= deleteFlagColumnSchema.Name #> = 0
+	WHERE
+	(	
+		<#str_and = "";
+		foreach (TableColumnSchema column in tableSchema.PrimaryKey) {#>
+		<#= str_and + column.Name #> = @<#= column.Name #>
+		<#str_and = "AND ";}#>
+	)
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRANSACTION
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+GO
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+<#
+}
+#>
+
+<#
+if (DeleteByParentObject)
+{
+#>
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("DeleteByParentObject")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("DeleteByParentObject") #>
+(
+	--region Объявление параметров
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(foreignKeyToParentSchema.ChildTable[column.ForeignKeyColumnName], false));
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+	#>
+	IF @<#= column.ForeignKeyColumnName #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение параметра: @<#= column.ForeignKeyColumnName #>',
+		NULL,
+		NULL,
+		2
+		
+	<#
+		}
+	#>
+	--endregion
+
+	--region Проверка корректности ссылки
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= foreignKeyToParentSchema.ParentTable.Name #> WHERE
+		(
+			<#
+				str_and = "";
+				foreach (ForeignKeyColumnPairSchema fk_column in this.foreignKeyToParentSchema.ColumnPairs)
+				{
+					Write(str_and + "			" + foreignKeyToParentSchema.ParentTableName + "." + fk_column.PrimaryKeyColumnName + " = @" + fk_column.ForeignKeyColumnName);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Некорректная ссылка на родительский объект',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	--region Удаление
+<#
+	if (deleteFlagColumnSchema == null)
+	{
+#>	
+	DELETE FROM <#= tableSchema.Name #>
+	WHERE
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + column.ForeignKeyColumnName + " = @" + column.ForeignKeyColumnName);
+			str_and = " AND" + Environment.NewLine;
+		}
+		Write(Environment.NewLine);
+	#>
+<#
+}
+#>
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRANSACTION;
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList AS EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+	
+GO
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+
+<#
+}
+#>
+
+<#
+if (CopyByParentObject)
+{
+#>
+
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("CopyByParentObject")) ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= GetProcedureName("CopyByParentObject") #>
+(
+	--region Объявление параметров
+	<#
+		//Внешний ключ, ссылающийся на исходный объект
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(foreignKeyToParentSchema.ChildTable[column.ForeignKeyColumnName], false, "Source"));
+			str_and = "," + Environment.NewLine;
+		}
+		//Внешний ключ, ссылающийся на новый объект
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "	" + GetParameterDeclaration2(foreignKeyToParentSchema.ChildTable[column.ForeignKeyColumnName], false, "Destination"));
+			str_and = "," + Environment.NewLine;
+		}
+		Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages XML OUTPUT
+	--endregion
+)
+AS
+SET NOCOUNT ON
+
+--region Объявление переменных
+DECLARE @ObjectID INT
+DECLARE @ErrorList TABLE
+(
+	Message VARCHAR(2000),
+	AttributeName VARCHAR(128) NULL,
+	AttributeFriendlyName VARCHAR(200) NULL,
+	Severity INT
+)
+DECLARE @ErrorMessage NVARCHAR(4000)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+--endregion
+
+--region Проверки
+BEGIN TRY
+	--region Проверка заполнения параметров
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+	#>
+	IF @Source<#= column.ForeignKeyColumnName #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение параметра: @Source<#= column.ForeignKeyColumnName #>',
+		NULL,
+		NULL,
+		2
+		
+	<#
+		}
+		//Внешний ключ, ссылающийся на новый объект
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+	#>
+	IF @Destination<#= column.ForeignKeyColumnName #> IS NULL
+	INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT
+		'Не задано значение параметра: @Destination<#= column.ForeignKeyColumnName #>',
+		NULL,
+		NULL,
+		2
+
+	<#
+		}
+	#>
+	--endregion
+
+	--region Проверка корректности ссылок
+
+	--region Проверка существования объекта-источника
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= foreignKeyToParentSchema.ParentTable.Name #> WHERE
+		(
+			<#
+				str_and = "";
+				foreach (ForeignKeyColumnPairSchema fk_column in this.foreignKeyToParentSchema.ColumnPairs)
+				{
+					Write(str_and + "			" + foreignKeyToParentSchema.ParentTableName + "." + fk_column.PrimaryKeyColumnName + " = @Source" + fk_column.ForeignKeyColumnName);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Некорректная ссылка на родительский объект - источник',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+	
+	--region Проверка существования целевого объекта
+	IF NOT EXISTS 
+	(
+		SELECT 0 FROM <#= this.foreignKeyToParentSchema.ParentTable.Name #> WHERE
+		(
+			<#
+				str_and = "";
+				foreach (ForeignKeyColumnPairSchema fk_column in foreignKeyToParentSchema.ColumnPairs)
+				{
+					Write(str_and + "			" + foreignKeyToParentSchema.ParentTable.Name + "." + fk_column.PrimaryKeyColumnName + " = @Destination" + fk_column.ForeignKeyColumnName);
+					str_and = "AND ";
+				}
+				WriteLine("");
+			#>
+		)
+	)
+	BEGIN
+		INSERT INTO @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+		SELECT
+			'Некорректная ссылка на целевой родительский объект',
+			NULL,
+			NULL,
+			2
+	END
+	--endregion
+	
+	--endregion
+
+END TRY
+BEGIN CATCH
+    SELECT 
+        @ErrorMessage = ERROR_MESSAGE(),
+        @ErrorSeverity = ERROR_SEVERITY(),
+        @ErrorState = ERROR_STATE();
+
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+	RETURN(-1)
+END CATCH
+--endregion
+
+IF NOT EXISTS (SELECT 0 FROM @ErrorList WHERE Severity != 1)
+BEGIN TRY
+	BEGIN TRANSACTION
+
+	--region Копирование
+	<#
+		if (dateTimeMarkColumnSchema != null)
+		{
+	#>
+	DECLARE @DateTimeVersion DATETIME
+	SET @DateTimeVersion = GETDATE()
+	<#
+		}
+	#>
+	
+	INSERT INTO <#= tableSchema.Name #>
+	(
+	<#
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if (!column.IsIdentity)
+			{
+				Write(str_and + "		" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}			
+		Write(Environment.NewLine);
+	#>
+	)
+	SELECT
+	<#
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+		{
+			bool contained = false;
+			foreach (ForeignKeyColumnPairSchema columnPair in foreignKeyToParentSchema.ColumnPairs)
+				if (columnPair.ForeignKeyColumnName == column.Name)
+				{
+					contained = true;
+					break;
+				}
+
+			if (dateTimeMarkColumnSchema != null && column.Name == dateTimeMarkColumnSchema.Name)
+			{
+				Write(str_and + "		@DateTimeVersion");
+				str_and = "," + Environment.NewLine;
+			}
+			else if (contained)
+			{
+				Write(str_and + "		@Destination" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+			else if (!column.IsIdentity)
+			{
+				Write(str_and + "		" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+		}
+		Write(Environment.NewLine);
+	#>
+	FROM <#= tableSchema.Name #>
+	WHERE
+	<#
+		str_and = "";
+		foreach (ForeignKeyColumnPairSchema column in foreignKeyToParentSchema.ColumnPairs)
+		{
+			Write(str_and + "		" + column.ForeignKeyColumnName + " = @Source" + column.ForeignKeyColumnName);
+			str_and = " AND" + Environment.NewLine;
+		}
+		Write(Environment.NewLine);
+	#>
+	--endregion
+	
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+    SELECT @ErrorMessage = ERROR_MESSAGE(), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE()
+
+	IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRANSACTION;
+    END
+	
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+END CATCH
+
+SET @ErrorMessages =
+(
+	SELECT Message, AttributeName, AttributeFriendlyName, Severity
+	FROM @ErrorList AS EL
+	ORDER BY EL.Severity DESC, EL.AttributeName
+	FOR XML RAW('row'), ROOT ('root')
+)
+
+IF EXISTS (SELECT 0 FROM @ErrorList)
+	RETURN(1)
+ELSE
+	RETURN(0)
+	
+GO
+
+<#
+}
+#>
+
+IF @@ERROR != 0
+BEGIN
+	SET NOEXEC ON
+END
+
+GO
+

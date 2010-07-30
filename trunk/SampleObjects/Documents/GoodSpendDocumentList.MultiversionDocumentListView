@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MultiversionDocumentListViewConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodSpendDocumentList</EntityName>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>CalcDayMenuName</Name>
+      <FriendlyName>CalcDayMenuName</FriendlyName>
+      <UILabel>Меню учетного дня</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>CalcDayDate</Name>
+      <FriendlyName>CalcDayDate</FriendlyName>
+      <UILabel>Учетны день</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentStateID</Name>
+      <FriendlyName>DocumentStateID</FriendlyName>
+      <UILabel>DocumentStateID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentDateTime</Name>
+      <FriendlyName>DocumentDateTime</FriendlyName>
+      <UILabel>Дата документа</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>StateName</Name>
+      <FriendlyName>StateName</FriendlyName>
+      <UILabel>Состояние</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentNumber</Name>
+      <FriendlyName>DocumentNumber</FriendlyName>
+      <UILabel>Документ №</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodSpendDocument_MealCalc_CalcDayMenu</Name>
+      <FriendlyName>FK_MealCalc_GoodSpendDocument_MealCalc_CalcDayMenu</FriendlyName>
+      <UILabel>Меню учетного дня</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodSpendDocument_MultiversionDocument_DocumentVersion</Name>
+      <FriendlyName>FK_MealCalc_GoodSpendDocument_MultiversionDocument_DocumentVersion</FriendlyName>
+      <UILabel>Документ</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <ViewName>MealCalc_GoodSpendDocument_ListView</ViewName>
+  <ShowDeletedObjects>false</ShowDeletedObjects>
+  <InvisibleColumns />
+  <IgnoredColumns />
+  <UICaption>Расходные документы</UICaption>
+  <TargetObjectNamespace>MealCalc</TargetObjectNamespace>
+  <TargetObjectName>GoodSpendDocument</TargetObjectName>
+</MultiversionDocumentListViewConstructorSettings>

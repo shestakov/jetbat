@@ -1,0 +1,1672 @@
+﻿<#@ template language="C#" #>
+<#@ Assembly Name="JetBat.DatabaseSchema"#>
+<#@ Import Namespace="JetBat.DatabaseSchema" #>
+USE [<#= DatabaseName #>]
+SET NOEXEC OFF
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+SET NOCOUNT ON
+GO
+
+--region Create
+--region Delegate AfterCreate
+<#
+	if (AfterCreate)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterCreate") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("AfterCreate") #>]
+@DocumentID int,
+@VersionID int
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+--SET @StartTransaction = 0;
+
+--begin try
+--	IF @@trancount = 0
+--	begin
+--		BEGIN TRAN;
+--		SET @StartTransaction = 1;
+--	end
+
+--	IF @StartTransaction = 1
+--	begin
+--		COMMIT TRAN;
+--	end
+--end try
+--begin catch
+--	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--	SET @КодОшибки = -1;
+
+--	IF xact_state() <> 0 and @StartTransaction = 1
+--	begin
+--		ROLLBACK TRAN;
+--	end
+
+--	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--end catch
+
+ENDPROC:
+--	return(@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Method Stored Procedure
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Create")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("Create") #>]
+	@DocumentID int OUTPUT,
+	@VersionID int OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+
+declare @Metadata_MultiversionDocumentID int;
+declare @КодОшибки int;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+
+begin try
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+
+	--region Creating new multiversion document
+	SELECT @Metadata_MultiversionDocumentID = DocDefine.ID 
+	FROM dbo.MultiversionDocument_DocumentDefinition as DocDefine
+	WHERE DocDefine.Namespace = '<#= EntityNamespace #>' 
+		and DocDefine.Name = '<#= EntityName #>';
+	
+	INSERT dbo.MultiversionDocument_Document(DocumentStateID,CurrentVersionID,Metadata_MultiversionDocumentID)
+	VALUES(0,null,@Metadata_MultiversionDocumentID);
+	
+	SELECT @DocumentID = scope_identity();
+	--endregion
+
+	--region Creating version for a new document
+	INSERT dbo.MultiversionDocument_DocumentVersion (DocumentID, DocumentVersionStateID)
+	VALUES (@DocumentID, 0);
+	
+	SELECT @VersionID = scope_identity();
+	
+	INSERT <#= tableSchema.Name #> (ID)VALUES(@VersionID);
+	
+	UPDATE dbo.MultiversionDocument_Document
+	SET dbo.MultiversionDocument_Document.CurrentVersionID = @VersionID
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+
+	--region Call of AfterCreate
+	<#
+		if (AfterCreate)
+		{
+	#>
+		exec dbo.<#= GetProcedureName("AfterCreate") #>
+			@DocumentID = @DocumentID,
+			@VersionID = @VersionID
+		;
+	<#
+		}
+	#>
+	--endregion
+	
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	SET @КодОшибки = -1;
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+
+	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+end catch
+
+ENDPROC:
+	return (@КодОшибки);
+end
+GO
+--endregion
+--endregion
+
+--region StartEdit
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("StartEdit")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("StartEdit") #>]
+	@DocumentID int,
+	@VersionID int OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+--declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+
+declare @CurrentVersionID int;
+declare @КодОшибки int;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+
+begin try
+	--region Checks
+	if (@DocumentID is null) 
+	begin
+		RAISERROR('Parameter @DocumentID is set to NULL', 16, -1)
+	end
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+
+	--region Loading document's current version
+	SELECT @CurrentVersionID = Document.CurrentVersionID 
+	FROM dbo.MultiversionDocument_Document as Document
+	WHERE Document.ID = @DocumentID;
+	
+	if @CurrentVersionID is null
+	begin
+		SET @ErrorMessage = 'Document does not have an actual vaersion. It is in process of creation, or damaged, so it can not be edited. ID = ' + cast(@DocumentID as varchar(20));
+		RAISERROR(@ErrorMessage , 16, -2);
+	end
+	--endregion
+
+	--region Duplication of document's actual version
+	
+	--region Duplication of the document's header
+	INSERT dbo.MultiversionDocument_DocumentVersion (DocumentID, DocumentVersionStateID)
+	VALUES (@DocumentID, 0 );
+	
+	SELECT @VersionID = scope_identity();
+	
+	INSERT <#= tableSchema.Name #>
+		(
+			ID,
+	<#
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				!column.IsPrimaryKeyMember
+			)
+			{
+				Write(str_and + "			" + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+	#>
+		)
+	SELECT 
+		@VersionID,
+	<#
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+			if
+			(
+				!column.IsPrimaryKeyMember
+			)
+			{
+				Write(str_and + "		" + tableSchema.Name + "." + column.Name);
+				str_and = "," + Environment.NewLine;
+			}
+	#>
+	FROM <#= tableSchema.Name #>
+	WHERE <#= tableSchema.Name #>.ID = @CurrentVersionID;
+	--endregion
+	
+	--region Duplication on child objects
+	<#
+		ChildObject[] child_objects = GetChildObjectList();
+		if (child_objects != null)
+		{
+			foreach (ChildObject child_object in child_objects)
+				if (child_object != null && child_object.CopyByParentObjectProcedureName != String.Empty)
+				{
+	#>
+	exec dbo.<#= child_object.CopyByParentObjectProcedureName #>
+		@SourceDocumentversionID = @CurrentVersionID,
+		@DestinationDocumentVersionID = @VersionID,
+		@ErrorMessages = null
+		;
+	<#
+				}
+		}
+	#>
+	--endregion
+	
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	SET @КодОшибки = -1;
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+
+	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+end catch
+
+ENDPROC:
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--region UpdateVersion
+--region Delegate BeforeUpdateVersion
+<#
+	if (BeforeUpdateVersion)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeUpdateVersion") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("BeforeUpdateVersion") #>]
+	@VersionID int,
+<#
+	str_and = "";
+	foreach (TableColumnSchema column in tableSchema.Columns)
+		if
+		(
+			!column.IsPrimaryKeyMember &&
+			!ColumnIsReadOnly(column.Name) &&			
+			column.Name != "DocumentVersionID"			
+		)
+		{
+			Write(str_and + "	" + GetParameterDeclaration(column, true));
+			str_and = "," + Environment.NewLine;
+		}
+	Write("," + Environment.NewLine);
+	#>
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+--	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+--	;
+
+--IF not exists(SELECT 1 FROM @ErrorList as q1 WHERE q1.Severity >= 2)
+--begin
+--	SET @StartTransaction = 0;
+
+--	begin try
+--		IF @@trancount = 0
+--		begin
+--			BEGIN TRAN;
+--			SET @StartTransaction = 1;
+--		end
+
+--		IF @StartTransaction = 1
+--		begin
+--			COMMIT TRAN;
+--		end
+--	end try
+--	begin catch
+--		SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--		SET @КодОшибки = -1;
+
+--		IF xact_state() <> 0 and @StartTransaction = 1
+--		begin
+--			ROLLBACK TRAN;
+--		end
+
+--		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--	end catch
+--end
+
+--IF @КодОшибки <> -1
+--begin
+--	SELECT TOP 1 @КодОшибки = EL.Severity
+--	FROM @ErrorList as EL
+--	ORDER BY EL.Severity desc;
+--end
+
+ENDPROC:
+--	SET @ErrorMessages =
+--				(
+--					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--					FROM @ErrorList AS EL
+--					ORDER BY EL.Severity DESC, EL.AttributeName
+--					FOR XML RAW(''row''), ROOT (''root'')
+--				);
+--	return (@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Method Stored Procedure
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("UpdateVersion")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("UpdateVersion") #>]
+	@VersionID int,
+<#
+	foreach (TableColumnSchema column in tableSchema.Columns)
+		if
+		(
+			!column.IsPrimaryKeyMember &&
+			!ColumnIsReadOnly(column.Name) &&			
+			column.Name != "DocumentVersionID"			
+		)
+		{
+			Write("	" + GetParameterDeclaration(column, false) + "," + Environment.NewLine);
+		}
+	#>
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+
+declare @DocumentID int;
+
+declare @ExistsLogicalErrors bit;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+SET @ExistsLogicalErrors = 0;
+
+begin try
+	--region Checks
+	IF (@VersionID is null) 
+	begin
+		RAISERROR('Не задан код версии: @VersionID', 16, -1);
+	end
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+	
+	--region Call of BeforeUpdateVersion
+	<# if (BeforeUpdateVersion) { #>
+
+	exec dbo.<#= GetProcedureName("BeforeUpdateVersion") #>
+		@VersionID = @VersionID,
+		<#
+			str_and = "";
+			foreach (TableColumnSchema column in tableSchema.Columns)
+				if
+				(
+					!column.IsPrimaryKeyMember &&
+					column.Name != "DocumentVersionID" &&
+					!ColumnIsReadOnly(column.Name)
+				)
+				{
+					Write(str_and + "		@" + column.Name + " = @" + column.Name + " OUTPUT");
+					str_and = "," + Environment.NewLine;
+				}
+			Write("," + Environment.NewLine);
+		#>
+		@ErrorMessages = @ErrorMessages OUTPUT
+		;
+		
+	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+		b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+		b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+		b.value('@Severity' , 'int') as СуровостьОшибки
+	FROM @ErrorMessages.nodes('/root/row') a(b);
+	
+	IF exists(SELECT 1 FROM @ErrorList as EL WHERE EL.Severity >=2)
+	begin
+		SET @ExistsLogicalErrors = 1;
+		RAISERROR('Exists critical error.',16,-1);
+	end
+
+	<# } #>
+	--endregion
+
+	--region Updating the version
+	UPDATE <#= tableSchema.Name #> 
+	SET
+	<#
+		str_and = "";
+		foreach (TableColumnSchema column in tableSchema.Columns)
+		if
+		(
+			!column.IsPrimaryKeyMember &&
+			!ColumnIsReadOnly(column.Name)
+		)
+		{
+			Write(str_and + "	" + column.Name + " = @" + column.Name);
+			str_and = "," + Environment.NewLine;
+		}
+	#><# #>
+	WHERE <#= tableSchema.Name #>.ID = @VersionID
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		SET @КодОшибки = -1;
+	end
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+	end
+end catch
+
+IF @КодОшибки <> -1
+begin
+	SELECT TOP 1 @КодОшибки = EL.Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity desc;
+end
+
+ENDPROC:
+	SET @ErrorMessages =
+				(
+					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+					FROM @ErrorList AS EL
+					ORDER BY EL.Severity DESC, EL.AttributeName
+					FOR XML RAW('row'), ROOT ('root')
+				);
+	return (@КодОшибки);
+end
+GO
+--endregion
+--endregion
+
+--region ConfirmEdit
+
+--region Delegate BeforeConfirmEdit
+<#
+	if (BeforeConfirmEdit)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeConfirmEdit") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("BeforeConfirmEdit") #>]
+	@VersionID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+
+--	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+--	;
+
+--IF not exists(SELECT 1 FROM @ErrorList as q1 WHERE q1.Severity >= 2)
+--begin
+--	SET @StartTransaction = 0;
+
+--	begin try
+--		IF @@trancount = 0
+--		begin
+--			BEGIN TRAN;
+--			SET @StartTransaction = 1;
+--		end
+
+--		IF @StartTransaction = 1
+--		begin
+--			COMMIT TRAN;
+--		end
+--	end try
+--	begin catch
+--		SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--		SET @КодОшибки = -1;
+
+--		IF xact_state() <> 0 and @StartTransaction = 1
+--		begin
+--			ROLLBACK TRAN;
+--		end
+
+--		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--	end catch
+--end
+
+--IF @КодОшибки <> -1
+--begin
+--	SELECT TOP 1 @КодОшибки = EL.Severity
+--	FROM @ErrorList as EL
+--	ORDER BY EL.Severity desc;
+--end
+
+ENDPROC:
+--	SET @ErrorMessages =
+--				(
+--					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--					FROM @ErrorList AS EL
+--					ORDER BY EL.Severity DESC, EL.AttributeName
+--					FOR XML RAW(''row''), ROOT (''root'')
+--				);
+--	return (@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Delegate AfterConfirmEdit
+<#
+	if (AfterConfirmEdit)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("AfterConfirmEdit") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("AfterConfirmEdit") #>]
+	@VersionID int
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+--SET @StartTransaction = 0;
+
+--begin try
+--	IF @@trancount = 0
+--	begin
+--		BEGIN TRAN;
+--		SET @StartTransaction = 1;
+--	end
+
+--	IF @StartTransaction = 1
+--	begin
+--		COMMIT TRAN;
+--	end
+--end try
+--begin catch
+--	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--	SET @КодОшибки = -1;
+
+--	IF xact_state() <> 0 and @StartTransaction = 1
+--	begin
+--		ROLLBACK TRAN;
+--	end
+	
+--	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--end catch
+
+ENDPROC:
+--	return (@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Method Stored Procedure
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("ConfirmEdit")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("ConfirmEdit") #>]
+	@VersionID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+declare @DocumentID int;
+declare @DocumentStateID int;
+
+declare @ExistsLogicalErrors bit;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+SET @ExistsLogicalErrors = 0;
+
+begin try
+	--region Checks
+	IF (@VersionID is null) 
+	begin
+		RAISERROR('Не задан код версии: @VersionID', 16, -1);
+	end
+	
+	IF not exists(SELECT 0 FROM dbo.MultiversionDocument_DocumentVersion WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID)
+	begin
+		SET @ErrorMessage = 'Ошибка при сохранении документа. Подтверждаемой версии с заданным кодом не существует. ID = ' + CAST(@VersionID AS varchar(40))
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	
+	SELECT @DocumentID = dbo.MultiversionDocument_DocumentVersion.DocumentID,
+			@DocumentStateID = dbo.MultiversionDocument_Document.DocumentStateID
+	FROM dbo.MultiversionDocument_DocumentVersion 
+		INNER JOIN dbo.MultiversionDocument_Document ON dbo.MultiversionDocument_DocumentVersion.DocumentID = dbo.MultiversionDocument_Document.ID
+	WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID
+	
+	IF coalesce(@DocumentStateID, -1) = 2 --проведенный документ
+	begin
+		RAISERROR('Редактирование допустимо только для черновиков документов.', 16, -2);
+	end
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+	
+	--region Call of BeforeConfirmEdit
+	<#
+		if (BeforeConfirmEdit)
+		{
+	#>
+	exec dbo.<#= GetProcedureName("BeforeConfirmEdit") #>
+		@VersionID = @VersionID,
+		@ErrorMessages = @ErrorMessages OUTPUT
+		;
+		
+	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+		b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+		b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+		b.value('@Severity' , 'int') as СуровостьОшибки
+	FROM @ErrorMessages.nodes('/root/row') a(b);
+	
+	IF exists(SELECT 1 FROM @ErrorList as EL WHERE EL.Severity >=2)
+	begin
+		SET @ExistsLogicalErrors = 1;
+		RAISERROR('Exists critical error.',16,-1);
+	end
+	<#
+		}
+	#>
+	--endregion	
+	
+	--region Changing document version's status to 'confirmed'
+	UPDATE dbo.MultiversionDocument_DocumentVersion 
+	SET dbo.MultiversionDocument_DocumentVersion.DocumentVersionStateID = 1 
+	WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID;
+	--endregion
+
+	--region Upadting the CurrentVersionID column of the document
+	UPDATE dbo.MultiversionDocument_Document 
+	SET dbo.MultiversionDocument_Document.CurrentVersionID = @VersionID 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+
+	--region Changing document status if was in process of creation
+	IF @DocumentStateID = 0
+	begin
+		UPDATE dbo.MultiversionDocument_Document 
+		SET dbo.MultiversionDocument_Document.DocumentStateID = 1 
+		WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	end
+	--endregion
+
+	--region Call of AfterConfirmEdit
+	<#
+		if (AfterConfirmEdit)
+		{
+	#>
+		exec dbo.<#= GetProcedureName("AfterConfirmEdit") #>
+			@VersionID = @VersionID;
+	<#
+		}
+	#>
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		SET @КодОшибки = -1;
+	end
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+	end
+end catch
+
+IF @КодОшибки <> -1
+begin
+	SELECT TOP 1 @КодОшибки = EL.Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity desc;
+end
+
+ENDPROC:
+	SET @ErrorMessages =
+				(
+					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+					FROM @ErrorList AS EL
+					ORDER BY EL.Severity DESC, EL.AttributeName
+					FOR XML RAW('row'), ROOT ('root')
+				);
+	return (@КодОшибки);
+end
+GO
+--endregion 
+
+--endregion
+
+--region CancelEdit
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("CancelEdit")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("CancelEdit") #>]
+	@VersionID INT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+
+declare @DocumentID int
+declare @DocumentStateID int
+declare @CurrentVersionID int
+declare @DocumentVersionStateID int
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+
+begin try
+	--region Checks
+	IF (@VersionID is null)
+	begin
+		RAISERROR('Parameter @VersionID is set to NULL', 16, -1);
+	end
+	
+	IF not exists(SELECT 0 FROM dbo.MultiversionDocument_DocumentVersion WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID)
+	begin 
+		SET @ErrorMessage = 'Error discarding document version - there is no such a version. VersionID = ' + cast(@VersionID as varchar(40));
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+
+	--region Loading document's properties
+	SELECT 
+		@DocumentVersionStateID = dbo.MultiversionDocument_DocumentVersion.DocumentVersionStateID,
+		@DocumentID = dbo.MultiversionDocument_DocumentVersion.DocumentID,
+		@DocumentStateID = dbo.MultiversionDocument_Document.DocumentStateID, 
+		@CurrentVersionID = dbo.MultiversionDocument_Document.CurrentVersionID
+	FROM dbo.MultiversionDocument_DocumentVersion
+		INNER JOIN dbo.MultiversionDocument_Document ON dbo.MultiversionDocument_DocumentVersion.DocumentID = dbo.MultiversionDocument_Document.ID
+	WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID;
+	--endregion
+
+	--region Deleting child objects
+	<#
+		child_objects = GetChildObjectList();
+		if (child_objects != null)
+		{
+			foreach (ChildObject child_object in child_objects)
+				if (child_object != null && child_object.DeleteByParentObjectProcedureName != String.Empty)
+				{
+	#>
+	exec dbo.<#= child_object.DeleteByParentObjectProcedureName #>
+		@DocumentVersionID = @VersionID,
+		@ErrorMessages = null
+		;
+	<#
+				}
+		}
+	#>
+	--endregion
+
+	--region Deleting document version
+	DELETE FROM <#= tableSchema.Name #> WHERE <#= tableSchema.Name #>.ID = @VersionID;
+	
+	IF @DocumentStateID = 0
+	begin
+		UPDATE dbo.MultiversionDocument_Document
+		SET dbo.MultiversionDocument_Document.CurrentVersionID = null
+		WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	end
+	
+	DELETE FROM dbo.MultiversionDocument_DocumentVersion WHERE dbo.MultiversionDocument_DocumentVersion.ID = @VersionID;
+	--endregion
+
+	--region Deleting document if it's creation was unconfirmed
+	IF @DocumentStateID = 0
+	begin
+		DELETE FROM dbo.MultiversionDocument_Document WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	end
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	SET @КодОшибки = -1;
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+
+	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+end catch
+
+ENDPROC:
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--region Delete
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Delete")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("Delete") #>]
+	@DocumentID int
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+
+begin try
+	--region Checks
+	IF (@DocumentID is null) 
+	begin
+		RAISERROR('Parameter @DocumentID is set to NULL', 16, -1);
+	end
+	
+	IF not exists(SELECT 0 FROM dbo.MultiversionDocument_Document WHERE dbo.MultiversionDocument_Document.ID = @DocumentID)
+	begin 
+		SET @ErrorMessage = 'Error deleting document - there is no such a document. @DocumentID = ' + cast(@DocumentID as varchar(40));
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+
+	--region Changing document state to 'deleted'
+	UPDATE dbo.MultiversionDocument_Document 
+	SET dbo.MultiversionDocument_Document.DocumentStateID = 100 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	SET @КодОшибки = -1;
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+	
+	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+end catch
+
+ENDPROC:
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--region Load
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Load")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("Load") #>]
+	@DocumentID int,
+	@CurrentVersionID int OUTPUT,
+<#
+	str_and = "";
+	foreach (ViewColumnSchema column in viewSchema.Columns)
+		if (!tableSchema.PrimaryKey.Contains(column.Name) && column.Name != "DocumentVersionID")
+		{
+			Write(str_and + "	" + GetParameterDeclaration(column, true));
+			str_and = "," + Environment.NewLine;
+		}
+	Write(Environment.NewLine);
+	#>
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @КодОшибки int;
+--endregion
+
+SET @КодОшибки = 0;
+
+begin try
+	--region Checks
+	IF @DocumentID is null
+	begin
+		RAISERROR('Parameter @DocumentID is set to NULL', 16, -1);
+	end
+	
+	IF not exists(SELECT 0 FROM dbo.MultiversionDocument_Document WHERE dbo.MultiversionDocument_Document.ID = @DocumentID)
+	begin 
+		SET @ErrorMessage = 'Error loading document - document not found. ID = ' + cast(@DocumentID as varchar(40));
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	--endregion
+
+	--region Loading document attributes
+	SELECT
+		@CurrentVersionID = dbo.MultiversionDocument_Document.CurrentVersionID
+	<#
+		str_and = "," + Environment.NewLine;
+		foreach (ViewColumnSchema column in viewSchema.Columns)
+			if
+			(
+				!tableSchema.PrimaryKey.Contains(column.Name)
+			)
+			{
+				Write(str_and + "	@" + column.Name + " = " + viewSchema.Name + "." + column.Name);
+			}
+		#>
+		FROM dbo.MultiversionDocument_Document
+			LEFT JOIN <#= viewSchema.Name #> ON dbo.MultiversionDocument_Document.CurrentVersionID = <#= viewSchema.Name #>.ID
+		WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+end try
+begin catch
+    SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	SET @КодОшибки = -1;
+    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+end catch
+
+ENDPROC:
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--region Commit
+--region Delegate BeforeCommit
+<#
+	if (BeforeCommit)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeCommit") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("BeforeCommit") #>]
+	@DocumentID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+
+--	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+--	;
+
+--IF not exists(SELECT 1 FROM @ErrorList as q1 WHERE q1.Severity >= 2)
+--begin
+--	SET @StartTransaction = 0;
+
+--	begin try
+--		IF @@trancount = 0
+--		begin
+--			BEGIN TRAN;
+--			SET @StartTransaction = 1;
+--		end
+
+--		IF @StartTransaction = 1
+--		begin
+--			COMMIT TRAN;
+--		end
+--	end try
+--	begin catch
+--		SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--		SET @КодОшибки = -1;
+
+--		IF xact_state() <> 0 and @StartTransaction = 1
+--		begin
+--			ROLLBACK TRAN;
+--		end
+
+--		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--	end catch
+--end
+
+--IF @КодОшибки <> -1
+--begin
+--	SELECT TOP 1 @КодОшибки = EL.Severity
+--	FROM @ErrorList as EL
+--	ORDER BY EL.Severity desc;
+--end
+
+ENDPROC:
+--	SET @ErrorMessages =
+--				(
+--					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--					FROM @ErrorList AS EL
+--					ORDER BY EL.Severity DESC, EL.AttributeName
+--					FOR XML RAW(''row''), ROOT (''root'')
+--				);
+--	return (@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Delegate OnCommit
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("OnCommit") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("OnCommit") #>]
+	@DocumentID int
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+--SET @StartTransaction = 0;
+
+--begin try
+--	IF @@trancount = 0
+--	begin
+--		BEGIN TRAN;
+--		SET @StartTransaction = 1;
+--	end
+
+--	IF @StartTransaction = 1
+--	begin
+--		COMMIT TRAN;
+--	end
+--end try
+--begin catch
+--	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--	SET @КодОшибки = -1;
+
+--	IF xact_state() <> 0 and @StartTransaction = 1
+--	begin
+--		ROLLBACK TRAN;
+--	end
+	
+--	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--end catch
+
+ENDPROC:
+--	return (@КодОшибки);
+end
+')
+GO
+
+--endregion
+
+--region Method Stored Procedure
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Commit")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("Commit") #>]
+	@DocumentID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+
+declare @DocumentStateID int;
+declare @VersionID int
+declare @ExistsLogicalErrors bit;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+SET @ExistsLogicalErrors = 0;
+
+begin try
+	--region Checks
+	--region Loading Document parameters
+	SELECT @DocumentStateID = dbo.MultiversionDocument_Document.DocumentStateID,
+		@VersionID = dbo.MultiversionDocument_Document.CurrentVersionID
+	FROM dbo.MultiversionDocument_Document 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+	
+	--region Checking CurrentVersionID
+	IF @VersionID is null
+	begin
+		SET @ErrorMessage = 'У указанного документа не найдена актуальная версия.';
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	--endregion
+	
+	--region Checking DocumentStateID
+	IF (@DocumentStateID != 1)
+	begin
+		SET @ErrorMessage = 'Error committing the document. Document must have ''confirmed'' status to be committed';
+		RAISERROR(@ErrorMessage, 16, -2);
+	end	
+	--endregion
+
+	--endregion
+
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+
+	--region Call of BeforeCommit
+	<#
+	if (BeforeCommit)
+		{
+	#>
+	exec dbo.<#= GetProcedureName("BeforeCommit") #>
+		@DocumentID = @DocumentID,
+		@ErrorMessages = @ErrorMessages OUTPUT
+		;
+		
+	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+		b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+		b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+		b.value('@Severity' , 'int') as СуровостьОшибки
+	FROM @ErrorMessages.nodes('/root/row') a(b);
+	
+	<#
+		}
+	#>
+	--endregion	
+	
+	--region Checking attributes for NOT NULL
+	<#
+	foreach (TableColumnSchema column in tableSchema.Columns)
+		if (!column.IsIdentity && column.Name != "DocumentVersionID" && !HeaderColumnIsNullable(column.Name))
+		{ #>
+	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT 'Не заполнен атрибут документа: <#= column.Name #>',
+		'<#= column.Name #>',
+		'<#= column.Name #>',
+		2
+	FROM <#= tableSchema.Name #> 
+	WHERE <#= tableSchema.Name #>.ID = @VersionID 
+		and <#= tableSchema.Name #>.<#= column.Name #> is null
+	;
+		<#
+		}
+		#>
+	--endregion
+	
+	IF exists(SELECT 1 FROM @ErrorList as EL WHERE EL.Severity >=2)
+	begin
+		SET @ExistsLogicalErrors = 1;
+		RAISERROR('Exists critical error.',16,-1);
+	end
+	
+	--region Call of OnCommit
+	exec dbo.<#= GetProcedureName("OnCommit") #>
+		@DocumentID = @DocumentID
+		;
+	--endregion
+
+	--region Changing document's status to 'committed'
+	UPDATE dbo.MultiversionDocument_Document 
+	SET dbo.MultiversionDocument_Document.DocumentStateID = 2 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		SET @КодОшибки = -1;
+	end
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+	end
+end catch
+
+IF @КодОшибки <> -1
+begin
+	SELECT TOP 1 @КодОшибки = EL.Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity desc;
+end
+
+ENDPROC:
+	SET @ErrorMessages =
+				(
+					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+					FROM @ErrorList AS EL
+					ORDER BY EL.Severity DESC, EL.AttributeName
+					FOR XML RAW('row'), ROOT ('root')
+				);
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--endregion
+
+--region Rollback
+--region Delegate BeforeRollback
+<#
+	if (BeforeRollback)
+	{
+#>
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("BeforeRollback") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("BeforeRollback") #>]
+	@DocumentID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+
+--	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+--	SELECT
+--		''Error Message'',
+--		NULL,
+--		NULL,
+--		2
+--	;
+
+--IF not exists(SELECT 1 FROM @ErrorList as q1 WHERE q1.Severity >= 2)
+--begin
+--	SET @StartTransaction = 0;
+
+--	begin try
+--		IF @@trancount = 0
+--		begin
+--			BEGIN TRAN;
+--			SET @StartTransaction = 1;
+--		end
+
+--		IF @StartTransaction = 1
+--		begin
+--			COMMIT TRAN;
+--		end
+--	end try
+--	begin catch
+--		SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--		SET @КодОшибки = -1;
+
+--		IF xact_state() <> 0 and @StartTransaction = 1
+--		begin
+--			ROLLBACK TRAN;
+--		end
+
+--		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--	end catch
+--end
+
+--IF @КодОшибки <> -1
+--begin
+--	SELECT TOP 1 @КодОшибки = EL.Severity
+--	FROM @ErrorList as EL
+--	ORDER BY EL.Severity desc;
+--end
+
+ENDPROC:
+--	SET @ErrorMessages =
+--				(
+--					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+--					FROM @ErrorList AS EL
+--					ORDER BY EL.Severity DESC, EL.AttributeName
+--					FOR XML RAW(''row''), ROOT (''root'')
+--				);
+--	return (@КодОшибки);
+end
+')
+GO
+<#
+	}
+#>
+--endregion
+
+--region Delegate OnRollback
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'<#= GetProcedureName("OnRollback") #>') AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+EXEC
+('
+CREATE PROCEDURE dbo.[<#= GetProcedureName("OnRollback") #>]
+	@DocumentID int
+AS
+begin
+
+SET NOCOUNT ON;
+
+--declare @StartTransaction bit;
+--declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+--declare @КодОшибки int;
+
+--SET @КодОшибки = 0;
+--SET @StartTransaction = 0;
+
+--begin try
+--	IF @@trancount = 0
+--	begin
+--		BEGIN TRAN;
+--		SET @StartTransaction = 1;
+--	end
+
+--	IF @StartTransaction = 1
+--	begin
+--		COMMIT TRAN;
+--	end
+--end try
+--begin catch
+--	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+--	SET @КодОшибки = -1;
+
+--	IF xact_state() <> 0 and @StartTransaction = 1
+--	begin
+--		ROLLBACK TRAN;
+--	end
+	
+--	RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+--end catch
+
+ENDPROC:
+--	return (@КодОшибки);
+end
+')
+GO
+
+--endregion
+
+--region Method Stored Procedure
+<#= DatabaseSchema.StoredProcedures.Contains(GetProcedureName("Rollback")) ? "ALTER" : "CREATE" #> PROCEDURE [dbo].[<#= GetProcedureName("Rollback") #>]
+	@DocumentID int,
+	@ErrorMessages xml OUTPUT
+AS
+begin
+
+SET NOCOUNT ON;
+
+--region Declarations
+declare @ErrorList table(Message varchar(2000),AttributeName varchar(128),AttributeFriendlyName varchar(200),Severity int);
+declare @ErrorMessage nvarchar(4000), @ErrorSeverity int, @ErrorState int;
+declare @StartTransaction bit;
+declare @КодОшибки int;
+
+declare @DocumentStateID int;
+declare @VersionID int
+declare @ExistsLogicalErrors bit;
+--endregion
+
+SET @КодОшибки = 0;
+SET @StartTransaction = 0;
+SET @ExistsLogicalErrors = 0;
+
+begin try
+	--region Checks
+	--region Loading Document parameters
+	SELECT @DocumentStateID = dbo.MultiversionDocument_Document.DocumentStateID,
+		@VersionID = dbo.MultiversionDocument_Document.CurrentVersionID
+	FROM dbo.MultiversionDocument_Document 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID;
+	--endregion
+	
+	--region Checking CurrentVersionID
+	IF @VersionID is null
+	begin
+		SET @ErrorMessage = 'У указанного документа не найдена актуальная версия.';
+		RAISERROR(@ErrorMessage, 16, -1);
+	end
+	--endregion
+	
+	--region Checking DocumentStateID
+	IF (@DocumentStateID != 2)
+	begin
+		SET @ErrorMessage = 'Error committing the document. Document must have ''confirmed'' status to be committed';
+		RAISERROR(@ErrorMessage, 16, -2);
+	end	
+	--endregion
+	--endregion
+	
+	IF @@trancount = 0
+	begin
+		BEGIN TRAN;
+		SET @StartTransaction = 1;
+	end
+	
+	--region Call of BeforeRollback
+	<#
+	if (BeforeRollback)
+		{
+	#>
+	exec dbo.<#= GetProcedureName("BeforeRollback") #>
+		@DocumentID = @DocumentID,
+		@ErrorMessages = @ErrorMessages OUTPUT
+		;
+		
+	INSERT @ErrorList (Message, AttributeName, AttributeFriendlyName, Severity)
+	SELECT b.value('@Message' , 'varchar(2000)') as Сообщение, 
+		b.value('@AttributeName' , 'varchar(128)') as ИмяАтрибута,
+		b.value('@AttributeFriendlyName' , 'varchar(200)') as ПсевдонимАтрибута,
+		b.value('@Severity' , 'int') as СуровостьОшибки
+	FROM @ErrorMessages.nodes('/root/row') a(b);
+	
+	<#
+		}
+	#>
+	--endregion	
+	
+	IF exists(SELECT 1 FROM @ErrorList as EL WHERE EL.Severity >=2)
+	begin
+		SET @ExistsLogicalErrors = 1;
+		RAISERROR('Exists critical error.',16,-1);
+	end
+	
+	--region Call of OnRollback
+	exec dbo.<#= GetProcedureName("OnRollback") #>
+		@DocumentID = @DocumentID
+		;
+	--endregion
+
+	--region Updating document status to 'uncommitted'
+	UPDATE dbo.MultiversionDocument_Document 
+	SET dbo.MultiversionDocument_Document.DocumentStateID = 1 
+	WHERE dbo.MultiversionDocument_Document.ID = @DocumentID
+	--endregion
+
+	IF @StartTransaction = 1
+	begin
+		COMMIT TRAN;
+	end
+end try
+begin catch
+	SELECT @ErrorMessage = error_message(), @ErrorSeverity = error_severity(), @ErrorState = error_state();
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		SET @КодОшибки = -1;
+	end
+	
+	IF xact_state() <> 0 and @StartTransaction = 1
+	begin
+		ROLLBACK TRAN;
+	end
+	
+	IF @ExistsLogicalErrors = 0
+	begin
+		RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+	end
+end catch
+
+IF @КодОшибки <> -1
+begin
+	SELECT TOP 1 @КодОшибки = EL.Severity
+	FROM @ErrorList as EL
+	ORDER BY EL.Severity desc;
+end
+
+ENDPROC:
+	SET @ErrorMessages =
+				(
+					SELECT Message, AttributeName, AttributeFriendlyName, Severity
+					FROM @ErrorList AS EL
+					ORDER BY EL.Severity DESC, EL.AttributeName
+					FOR XML RAW('row'), ROOT ('root')
+				);
+	return (@КодОшибки);
+end
+GO
+--endregion
+
+--endregion
