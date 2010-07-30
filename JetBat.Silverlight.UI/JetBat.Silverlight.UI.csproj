@@ -199,6 +199,7 @@
     </None>
     <Resource Include="Images\FindHS.png" />
     <Resource Include="Images\x.png" />
+    <Resource Include="Images\undelete_16.png" />
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>
