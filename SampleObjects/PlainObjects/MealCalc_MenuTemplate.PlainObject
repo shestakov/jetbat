@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>MenuTemplate</EntityName>
+  <Methods />
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>Description</Name>
+      <FriendlyName>Description</FriendlyName>
+      <UILabel>Описание</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Active</Name>
+      <FriendlyName>Active</FriendlyName>
+      <UILabel>Активно</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Name</Name>
+      <FriendlyName>Name</FriendlyName>
+      <UILabel>Наименование</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases />
+  <UIEditorName>MenuTemplateForm</UIEditorName>
+  <TableName>MealCalc_MenuTemplate</TableName>
+  <ViewName>MealCalc_MenuTemplate_View</ViewName>
+  <StatusColumnInitialValue>0</StatusColumnInitialValue>
+  <InvisibleColumns>
+    <string>ID</string>
+  </InvisibleColumns>
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <MethodInsert>true</MethodInsert>
+  <MethodBeforeInsert>false</MethodBeforeInsert>
+  <MethodAfterInsert>false</MethodAfterInsert>
+  <MethodUpdate>true</MethodUpdate>
+  <MethodBeforeUpdate>false</MethodBeforeUpdate>
+  <MethodAfterUpdate>false</MethodAfterUpdate>
+  <MethodLoad>true</MethodLoad>
+  <MethodDelete>true</MethodDelete>
+  <MethodBeforeDelete>false</MethodBeforeDelete>
+  <MethodAfterDelete>false</MethodAfterDelete>
+  <MethodRestore>false</MethodRestore>
+  <MethodBeforeRestore>false</MethodBeforeRestore>
+  <MethodAfterRestore>false</MethodAfterRestore>
+  <MethodCopyByParentObject>false</MethodCopyByParentObject>
+  <MethodDeleteByParentObject>false</MethodDeleteByParentObject>
+</PlainObjectConstructorSettings>

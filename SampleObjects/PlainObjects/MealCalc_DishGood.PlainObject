@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>DishGood</EntityName>
+  <Methods />
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>GoodID</Name>
+      <FriendlyName>GoodID</FriendlyName>
+      <UILabel>GoodID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DishID</Name>
+      <FriendlyName>DishID</FriendlyName>
+      <UILabel>DishID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Quantity</Name>
+      <FriendlyName>Quantity</FriendlyName>
+      <UILabel>Количество</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_DishGood_MealCalc_Dish</Name>
+      <FriendlyName>FK_MealCalc_DishGood_MealCalc_Dish</FriendlyName>
+      <UILabel>Блюдо</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_DishGood_MealCalc_Good</Name>
+      <FriendlyName>FK_MealCalc_DishGood_MealCalc_Good</FriendlyName>
+      <UILabel>Наименование продукта</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <UIEditorName>DishGoodForm</UIEditorName>
+  <TableName>MealCalc_DishGood</TableName>
+  <ViewName>MealCalc_DishGood_View</ViewName>
+  <StatusColumnInitialValue>0</StatusColumnInitialValue>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <MethodInsert>true</MethodInsert>
+  <MethodBeforeInsert>false</MethodBeforeInsert>
+  <MethodAfterInsert>false</MethodAfterInsert>
+  <MethodUpdate>true</MethodUpdate>
+  <MethodBeforeUpdate>false</MethodBeforeUpdate>
+  <MethodAfterUpdate>false</MethodAfterUpdate>
+  <MethodLoad>true</MethodLoad>
+  <MethodDelete>true</MethodDelete>
+  <MethodBeforeDelete>false</MethodBeforeDelete>
+  <MethodAfterDelete>false</MethodAfterDelete>
+  <MethodRestore>false</MethodRestore>
+  <MethodBeforeRestore>false</MethodBeforeRestore>
+  <MethodAfterRestore>false</MethodAfterRestore>
+  <MethodCopyByParentObject>false</MethodCopyByParentObject>
+  <MethodDeleteByParentObject>false</MethodDeleteByParentObject>
+</PlainObjectConstructorSettings>

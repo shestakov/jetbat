@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D2396A2D-18B6-4B84-8DB7-D593F00EA615}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBat.Metadata</RootNamespace>
+    <AssemblyName>JetBat.Metadata</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Entity">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttributeAlias.cs" />
+    <Compile Include="BusinessObjectConstructor.cs" />
+    <Compile Include="BusinessObjectConstructorSettings.cs" />
+    <Compile Include="BusinessObjectMethodDefinition.cs" />
+    <Compile Include="BusinessObjectOnTableAndViewConstructor.cs" />
+    <Compile Include="ConstructionProject\ConstructionProject.cs" />
+    <Compile Include="ConstructionProject\ConstructionProjectItem.cs" />
+    <Compile Include="ConstructionProject\ConstructionProjectItemType.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="MetadataModel.Designer.cs">
+      <DependentUpon>MetadataModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="MultiversionDocumentListViewManager\MultiversionDocumentListViewConstructor.cs" />
+    <Compile Include="MultiversionDocumentListViewManager\MultiversionDocumentListViewConstructorSettings.cs" />
+    <Compile Include="MultiversionDocumentListViewManager\MultiversionDocumentListViewTemplateRenderer.cs" />
+    <Compile Include="MultiversionDocumentManager\MultiversionDocumentConstructor.cs" />
+    <Compile Include="MultiversionDocumentManager\MultiversionDocumentConstructorSettings.cs" />
+    <Compile Include="MultiversionDocumentManager\MultiversionDocumentTemplateRenderer.cs" />
+    <Compile Include="PlainObjectListViewManager\PlainObjectListViewConstructor.cs" />
+    <Compile Include="PlainObjectListViewManager\PlainObjectListViewConstructorSettings.cs" />
+    <Compile Include="PlainObjectListViewManager\PlainObjectListViewTemplateRenderer.cs" />
+    <Compile Include="PlainObjectManager\PlainObjectConstructor.cs" />
+    <Compile Include="PlainObjectManager\PlainObjectConstructorSettings.cs" />
+    <Compile Include="PlainObjectManager\PlainObjectTemplateRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptMaster.cs" />
+    <Compile Include="StoredProcedureParameterDefinition.cs" />
+    <Compile Include="StoredQueryManager\StoredQueryConstructor.cs" />
+    <Compile Include="StoredQueryManager\StoredQueryConstructorSettings.cs" />
+    <Compile Include="Templates\MultiversionDocumentListView\MultiversionDocumentListViewStoredProcedureTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MultiversionDocumentListViewStoredProcedureTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\MultiversionDocumentListView\MultiversionDocumentListViewStoredProcedureTemplate_CodeBehind.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Templates\MultiversionDocument\MultiversionDocumentStoredProcedureTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MultiversionDocumentStoredProcedureTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\MultiversionDocument\MultiversionDocumentStoredProcedureTemplate_CodeBehind.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Templates\PlainObjectListView\PlainObjectListViewStoredProcedureTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlainObjectListViewStoredProcedureTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\PlainObjectListView\PlainObjectListViewStoredProcedureTemplate_CodeBehind.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Templates\PlainObject\PlainObjectStoredProcedureTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlainObjectStoredProcedureTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\PlainObject\PlainObjectStoredProcedureTemplate_CodeBehind.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <EntityDeploy Include="MetadataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MetadataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="SqlScripts\CreateDataTypes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateDateTimeFormats.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateDocumentInfrastructure.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateDocumentStatuses.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateMetadataStoreDatabase.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateMetadataStoreDatabaseSpecifyFiles.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateMetadataStoreObjects.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateMetadataUpdateProcedure.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateObjectTypes.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlScripts\CreateProvideMultiversionDocumentDefinitionsProcedure.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MultiversionDocumentListView\MultiversionDocumentListViewStoredProcedureTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>MultiversionDocumentListViewStoredProcedureTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="Templates\MultiversionDocument\MultiversionDocumentStoredProcedureTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>MultiversionDocumentStoredProcedureTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="Templates\PlainObjectListView\PlainObjectListViewStoredProcedureTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlainObjectListViewStoredProcedureTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="Templates\PlainObject\PlainObjectStoredProcedureTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlainObjectStoredProcedureTemplate.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JetBat.DatabaseSchema\JetBat.DatabaseSchema.csproj">
+      <Project>{73DDE6B6-23F2-41AA-A847-F088E24B19AA}</Project>
+      <Name>JetBat.DatabaseSchema</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

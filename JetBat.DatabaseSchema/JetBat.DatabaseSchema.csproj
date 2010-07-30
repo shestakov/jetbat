@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{73DDE6B6-23F2-41AA-A847-F088E24B19AA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBat.DatabaseSchema</RootNamespace>
+    <AssemblyName>JetBat.DatabaseSchema</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>JetBat.DatabaseSchema.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DatabaseSchema.cs" />
+    <Compile Include="ForeignKeyColumnPairSchema.cs" />
+    <Compile Include="ForeignKeySchema.cs" />
+    <Compile Include="INamedObject.cs" />
+    <Compile Include="NamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServer\ForeignKeyColumnPairDescriptor.cs" />
+    <Compile Include="SqlServer\ForeignKeyDescriptor.cs" />
+    <Compile Include="SqlServer\SqlSchemaProvider.cs" />
+    <Compile Include="SqlServer\StoredProcedureDescriptor.cs" />
+    <Compile Include="SqlServer\StoredProcedureParameterDescriptor.cs" />
+    <Compile Include="SqlServer\TableColumnDescriptor.cs" />
+    <Compile Include="SqlServer\TableDescriptor.cs" />
+    <Compile Include="SqlServer\ViewColumnDescriptor.cs" />
+    <Compile Include="SqlServer\ViewDescriptor.cs" />
+    <Compile Include="StoredProcedureParameterSchema.cs" />
+    <Compile Include="StoredProcedureSchema.cs" />
+    <Compile Include="TableColumnSchema.cs" />
+    <Compile Include="TableSchema.cs" />
+    <Compile Include="ViewColumnSchema.cs" />
+    <Compile Include="ViewSchema.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="JetBat.DatabaseSchema.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

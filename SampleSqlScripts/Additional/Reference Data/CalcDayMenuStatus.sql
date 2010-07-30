@@ -1,0 +1,8 @@
+INSERT INTO MealCalc_CalcDayMenuStatus (ID, Name)
+VALUES (1, N'Составление меню')
+INSERT INTO MealCalc_CalcDayMenuStatus (ID, Name)
+VALUES (2, N'Калькуляция утверждена')
+INSERT INTO MealCalc_CalcDayMenuStatus (ID, Name)
+VALUES (3, N'Создан расходных документ')
+INSERT INTO MealCalc_CalcDayMenuStatus (ID, Name)
+VALUES (4, N'Меню закрыто')

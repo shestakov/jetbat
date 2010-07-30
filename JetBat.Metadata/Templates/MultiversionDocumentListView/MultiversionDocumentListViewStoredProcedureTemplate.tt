@@ -1,0 +1,36 @@
+﻿<#@ template language="C#" #>
+<#@ Assembly Name="JetBat.DatabaseSchema"#>
+<#@ Import Namespace="JetBat.DatabaseSchema" #>
+SET NOCOUNT ON
+SET XACT_ABORT ON
+SET NOEXEC OFF
+USE [<#= DatabaseName #>]
+GO
+
+<#= DatabaseSchema.StoredProcedures.Contains(NamespacePrefix + "_" + EntityName + "_" + "LoadList") ? "ALTER" : "CREATE" #> PROCEDURE dbo.<#= NamespacePrefix #>_<#= EntityName #>_LoadList
+<#
+	str_and = "	";
+	foreach(StoredProcedureParameterSchema parameterSchema in ParameterDefinitions)
+	{
+		Write(str_and + GetParameterDeclaration(parameterSchema));
+		str_and = "," + Environment.NewLine;
+	}
+	if (ParameterDefinitions.Count > 0)
+		WriteLine("");
+	WriteLine("	@StartDateTime datetime,");
+	WriteLine("	@EndDateTime datetime");
+#>
+AS
+SELECT 
+<#
+	str_and = "";
+	foreach (ViewColumnSchema column in viewSchema.Columns)
+	{
+		Write(str_and + "	" + column.Name);
+		str_and = "," + Environment.NewLine;
+	}
+	WriteLine("");
+#>
+FROM <#= viewSchema.Name #> 
+WHERE DocumentDateTime BETWEEN @StartDateTime AND @EndDateTime
+GO

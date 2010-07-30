@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodSpendDocumentDetail</EntityName>
+  <Methods />
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>GoodID</Name>
+      <FriendlyName>GoodID</FriendlyName>
+      <UILabel>GoodID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>GoodName</Name>
+      <FriendlyName>GoodName</FriendlyName>
+      <UILabel>Наименование продукта</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentVersionID</Name>
+      <FriendlyName>DocumentVersionID</FriendlyName>
+      <UILabel>DocumentVersionID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>GoodCommodityName</Name>
+      <FriendlyName>GoodCommodityName</FriendlyName>
+      <UILabel>Коммерческое наименование</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Quantity</Name>
+      <FriendlyName>Quantity</FriendlyName>
+      <UILabel>Количество</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>SequenceNumber</Name>
+      <FriendlyName>SequenceNumber</FriendlyName>
+      <UILabel>№ п/п</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Price</Name>
+      <FriendlyName>Price</FriendlyName>
+      <UILabel>Цена</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodSpendDocumentDetail_MealCalc_Good</Name>
+      <FriendlyName>FK_MealCalc_GoodSpendDocumentDetail_MealCalc_Good</FriendlyName>
+      <UILabel>Наименование продукта</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodSpendDocumentDetail_MealCalc_GoodSpendDocument</Name>
+      <FriendlyName>FK_MealCalc_GoodSpendDocumentDetail_MealCalc_GoodSpendDocument</FriendlyName>
+      <UILabel>Документ</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <UIEditorName>GoodSpendDocumentDetailForm</UIEditorName>
+  <TableName>MealCalc_GoodSpendDocumentDetail</TableName>
+  <ViewName>MealCalc_GoodSpendDocumentDetail_View</ViewName>
+  <StatusColumnInitialValue>0</StatusColumnInitialValue>
+  <ParentObjectNamespace>MealCalc</ParentObjectNamespace>
+  <ParentObjectName>GoodSpendDocument</ParentObjectName>
+  <ForeignKeyToParentObjectName>FK_MealCalc_GoodSpendDocumentDetail_MealCalc_GoodSpendDocument</ForeignKeyToParentObjectName>
+  <SequenceNumberColumnName>SequenceNumber</SequenceNumberColumnName>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <MethodInsert>true</MethodInsert>
+  <MethodBeforeInsert>false</MethodBeforeInsert>
+  <MethodAfterInsert>false</MethodAfterInsert>
+  <MethodUpdate>true</MethodUpdate>
+  <MethodBeforeUpdate>false</MethodBeforeUpdate>
+  <MethodAfterUpdate>false</MethodAfterUpdate>
+  <MethodLoad>true</MethodLoad>
+  <MethodDelete>true</MethodDelete>
+  <MethodBeforeDelete>false</MethodBeforeDelete>
+  <MethodAfterDelete>false</MethodAfterDelete>
+  <MethodRestore>false</MethodRestore>
+  <MethodBeforeRestore>false</MethodBeforeRestore>
+  <MethodAfterRestore>false</MethodAfterRestore>
+  <MethodCopyByParentObject>true</MethodCopyByParentObject>
+  <MethodDeleteByParentObject>true</MethodDeleteByParentObject>
+</PlainObjectConstructorSettings>

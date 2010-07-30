@@ -1,0 +1,318 @@
+<Configuration>
+  <CodeStyleSettings>
+    <ExternalPath IsNull="False">
+    </ExternalPath>
+    <Sharing>SOLUTION</Sharing>
+    <CSharp>
+      <FormatSettings>
+        <INDENT_ANONYMOUS_METHOD_BLOCK>False</INDENT_ANONYMOUS_METHOD_BLOCK>
+        <INDENT_EMBRACED_INITIALIZER_BLOCK>False</INDENT_EMBRACED_INITIALIZER_BLOCK>
+        <MODIFIERS_ORDER IsNull="False">
+          <Item>public</Item>
+          <Item>protected</Item>
+          <Item>internal</Item>
+          <Item>private</Item>
+          <Item>new</Item>
+          <Item>abstract</Item>
+          <Item>virtual</Item>
+          <Item>override</Item>
+          <Item>sealed</Item>
+          <Item>static</Item>
+          <Item>readonly</Item>
+          <Item>extern</Item>
+          <Item>unsafe</Item>
+          <Item>volatile</Item>
+        </MODIFIERS_ORDER>
+        <STICK_COMMENT>False</STICK_COMMENT>
+      </FormatSettings>
+      <UsingsSettings />
+      <Naming2>
+        <EventHandlerPatternLong>$object$_On$event$</EventHandlerPatternLong>
+        <EventHandlerPatternShort>$event$Handler</EventHandlerPatternShort>
+        <ExceptionName IsNull="False">
+        </ExceptionName>
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="TypesAndNamespaces" />
+        <PredefinedRule Inspect="True" Prefix="I" Suffix="" Style="AaBb" ElementKind="Interfaces" />
+        <PredefinedRule Inspect="True" Prefix="T" Suffix="" Style="AaBb" ElementKind="TypeParameters" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="MethodPropertyEvent" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="Locals" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="LocalConstants" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="Parameters" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PublicFields" />
+        <PredefinedRule Inspect="True" Prefix="_" Suffix="" Style="aaBb" ElementKind="PrivateInstanceFields" />
+        <PredefinedRule Inspect="True" Prefix="_" Suffix="" Style="aaBb" ElementKind="PrivateStaticFields" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Constants" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateConstants" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="StaticReadonly" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateStaticReadonly" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="EnumMember" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Other" />
+      </Naming2>
+      <CustomMemberReorderingPatterns><![CDATA[<Patterns xmlns="urn:shemas-jetbrains-com:member-reordering-patterns">
+
+<Pattern>
+<Entry>
+      <Match>
+        <Kind Is="constructor"/>
+      </Match>
+      <Sort>
+        <Static/>
+      </Sort>
+   </Entry>
+
+<Entry>
+      <Match>
+        <And Weight="100">
+          <Kind Is="member"/>
+          <ImplementsInterface/>
+        </And>
+      </Match>
+      <Sort>
+        <ImplementsInterface Immediate="true"/>
+      </Sort>
+    </Entry>
+
+<Entry>
+<Match>
+<Access Is="public"/>
+</Match>
+<Sort>
+<Kind Order="delegate event method operator property indexer field class struct"/>
+</Sort>
+</Entry>
+
+<Entry>
+<Match>
+<Access Is="internal"/>
+</Match>
+<Sort>
+<Kind Order="delegate event method operator property indexer field class struct"/>
+</Sort>
+</Entry>
+
+<Entry>
+<Match>
+<Access Is="protected-internal"/>
+</Match>
+<Sort>
+<Kind Order="delegate event method operator property indexer field class struct"/>
+</Sort>
+</Entry>
+
+<Entry>
+<Match>
+<Access Is="protected"/>
+</Match>
+<Sort>
+<Kind Order="delegate event method operator property indexer field class struct"/>
+</Sort>
+</Entry>
+
+<Entry>
+<Match>
+<Access Is="private"/>
+</Match>
+<Sort>
+<Kind Order="delegate event method operator property indexer field class struct"/>
+</Sort>
+</Entry>
+</Pattern>
+</Patterns>]]></CustomMemberReorderingPatterns>
+    </CSharp>
+    <VB>
+      <FormatSettings />
+      <ImportsSettings />
+      <Naming2>
+        <EventHandlerPatternLong>$object$_On$event$</EventHandlerPatternLong>
+        <EventHandlerPatternShort>$event$Handler</EventHandlerPatternShort>
+      </Naming2>
+    </VB>
+    <Web>
+      <Naming2 />
+    </Web>
+    <Xaml>
+      <Naming2 />
+    </Xaml>
+    <XML>
+      <FormatSettings />
+    </XML>
+    <GenerateMemberBody />
+    <Naming2>
+      <EventHandlerPatternLong>$object$_On$event$</EventHandlerPatternLong>
+      <EventHandlerPatternShort>$event$Handler</EventHandlerPatternShort>
+      <ExceptionName IsNull="False">
+      </ExceptionName>
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="MethodPropertyEvent">
+        <ExtraRule Prefix="" Suffix="" Style="aaBb" />
+      </PredefinedRule>
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="TypesAndNamespaces">
+        <ExtraRule Prefix="НСИ_" Suffix="" Style="AaBb" />
+      </PredefinedRule>
+      <PredefinedRule Inspect="True" Prefix="I" Suffix="" Style="AaBb" ElementKind="Interfaces" />
+      <PredefinedRule Inspect="True" Prefix="T" Suffix="" Style="AaBb" ElementKind="TypeParameters" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="Locals" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="LocalConstants" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="Parameters" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PublicFields">
+        <ExtraRule Prefix="" Suffix="" Style="aaBb" />
+      </PredefinedRule>
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="PrivateInstanceFields" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="PrivateStaticFields" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Constants" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateConstants" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="StaticReadonly" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateStaticReadonly" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="EnumMember" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Other" />
+      <Abbreviation Text="ID" />
+      <Abbreviation Text="UI" />
+      <Abbreviation Text="OU" />
+      <Abbreviation Text="IDОУ" />
+      <Abbreviation Text="EEID" />
+    </Naming2>
+  </CodeStyleSettings>
+  <Daemon.SolutionSettings>
+    <SkipFilesAndFolders>
+      <Item>D2396A2D-18B6-4B84-8DB7-D593F00EA615/f:MetadataModel.Designer.cs</Item>
+    </SkipFilesAndFolders>
+  </Daemon.SolutionSettings>
+  <SharedSolutionTemplateManager>
+    <LiveTemplates>
+      <Template uid="ba496d3c-f078-4874-9f7e-45836f0ca965" shortcut="testClass" description="" text="public class $TestClass$Test : $TestBase$&#xD;&#xA;{&#xD;&#xA;    [Test]&#xD;&#xA;    public void Test$Method$(){}&#xD;&#xA;}&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TestBase" expression="constant(&quot;TestBase&quot;)" initialRange="0" />
+          <Variable name="TestClass" expression="constant(&quot;Class&quot;)" initialRange="0" />
+          <Variable name="Method" expression="constant(&quot;Method&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="8752ab44-4bc3-48a3-9889-07ca0b668ae7" shortcut="testMethod" description="" text="[Test]&#xD;&#xA;public void Test$Method$(){}" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="Method" expression="constant(&quot;Method&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="e6278fd8-3058-4998-829a-e4b6dd7cd894" shortcut="calltemp" description="" text="&lt;xsl:call-template name=&quot;$TempName$&quot;&gt;&#xD;&#xA;	&lt;xsl:with-param name=&quot;$paramName$&quot; select=&quot;$selectExpression$&quot;/&gt;&#xD;&#xA;&lt;/xsl:call-template&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TempName" expression="constant(&quot;tempName&quot;)" initialRange="0" />
+          <Variable name="paramName" expression="constant(&quot;paramName&quot;)" initialRange="0" />
+          <Variable name="selectExpression" expression="constant(&quot;$var&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="486987ea-994f-4ce7-9b99-a68ade58f8d7" shortcut="copyof" description="" text="&lt;xsl:copy-of select='$$periodNameVariable$'/&gt;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="periodNameVariable" expression="constant(&quot;var&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="f4f4a82a-cc3d-410d-a10a-9c36ba22e097" shortcut="template" description="" text="  &lt;xsl:template name='$TemplateName$'&gt;&#xD;&#xA;	&lt;xsl:param name='$ParamName$' /&gt;&#xD;&#xA;  &lt;/xsl:template&gt;&#xD;&#xA;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TemplateName" expression="constant(&quot;tempName&quot;)" initialRange="0" />
+          <Variable name="ParamName" expression="constant(&quot;param&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="1e4fae7e-3030-42b7-ba32-02151544682e" shortcut="var" description="" text="&lt;xsl:variable name=&quot;$var$&quot; select=&quot;$$expr$&quot; /&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="var" expression="constant(&quot;var&quot;)" initialRange="0" />
+          <Variable name="expr" expression="constant(&quot;expr&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="04044904-d4a9-4701-adc8-5cd8593d94a2" shortcut="if" description="xsl:if ,,," text="&lt;xsl:if test=&quot;/*/$NodeToSelect$&quot;&gt;$text$&lt;/xsl:if&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml; *.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="NodeToSelect" expression="" initialRange="0" />
+          <Variable name="text" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="d3935e64-7e6f-4d1f-be58-f5052c01793a" shortcut="foreach" description="xsl:foreach ..." text="&lt;xsl:for-each select=&quot;/*/$NodeList$/item&quot;&gt;&#xD;&#xA;&lt;/xsl:for-each&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="NodeList" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="449fd11e-9535-4941-bae4-88b9025c7ade" shortcut="tablerow" description="&lt;xsl:table-row ..." text="&lt;fo:table-row&gt;&#xD;&#xA;	&lt;fo:table-cell&gt;&#xD;&#xA;		&lt;fo:block&gt;&#xD;&#xA;			&#xD;&#xA;		&lt;/fo:block&gt;&#xD;&#xA;	&lt;/fo:table-cell&gt;&#xD;&#xA;&lt;/fo:table-row&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables />
+        <CustomProperties />
+      </Template>
+      <Template uid="0f96ef37-54bb-44c2-96a8-d5447fc57306" shortcut="valueof" description="" text="&lt;xsl:value-of select=&quot;/*/$nodeToSelect$&quot;/&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="nodeToSelect" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="4150423b-ffdf-4be5-96ce-310ec3efe9f1" shortcut="table" description="fo:table ..." text="&lt;fo:table table-layout=&quot;fixed&quot; font-size=&quot;12pt&quot;&gt;&#xD;&#xA;	&lt;fo:table-column column-width=&quot;$width$&quot;/&gt;&#xD;&#xA;	&lt;fo:table-body&gt;&#xD;&#xA;		&lt;xsl:for-each select=&quot;/*/$array$/item&quot;&gt;&#xD;&#xA;			&lt;fo:table-row&gt;&#xD;&#xA;				&lt;fo:table-cell&gt;&#xD;&#xA;					&lt;fo:block&gt;&#xD;&#xA;						&lt;xsl:value-of select=&quot;.&quot;/&gt;&#xD;&#xA;					&lt;/fo:block&gt;&#xD;&#xA;				&lt;/fo:table-cell&gt;&#xD;&#xA;			&lt;/fo:table-row&gt;&#xD;&#xA;		&lt;/xsl:for-each&gt;&#xD;&#xA;	&lt;/fo:table-body&gt;&#xD;&#xA;&lt;/fo:table&gt;&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xml;*.xslt" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="width" expression="" initialRange="0" />
+          <Variable name="array" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="2be6c671-9ed3-42e6-82a9-9b25f8d61582" shortcut="space" description="" text="&lt;xsl:value-of select=&quot;' '&quot;/&gt;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <FileNameContext mask="*.xslt;*.xml" />
+        </Context>
+        <Categories />
+        <Variables />
+        <CustomProperties />
+      </Template>
+      <Template uid="a808128f-8368-4d9d-94b0-459f4760a5dd" shortcut="dataMember" description="" text="[DataMember]&#xD;&#xA;public $type$ $Property$ { get; set; }&#xD;&#xA;" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="type" expression="constant(&quot;string&quot;)" initialRange="0" />
+          <Variable name="Property" expression="constant(&quot;Property&quot;)" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+    </LiveTemplates>
+  </SharedSolutionTemplateManager>
+</Configuration>

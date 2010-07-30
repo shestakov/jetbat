@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodPackingUnit</EntityName>
+  <Methods />
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>GoodID</Name>
+      <FriendlyName>GoodID</FriendlyName>
+      <UILabel>GoodID</UILabel>
+      <IsUserVisible>false</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>Name</Name>
+      <FriendlyName>Name</FriendlyName>
+      <UILabel>Наименование</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>KgPerPackingUnit</Name>
+      <FriendlyName>KgPerPackingUnit</FriendlyName>
+      <UILabel>Кг в единице</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodPackingUnit_MealCalc_Good</Name>
+      <FriendlyName>FK_MealCalc_GoodPackingUnit_MealCalc_Good</FriendlyName>
+      <UILabel>Продукт</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <UIEditorName>GoodPackingUnitForm</UIEditorName>
+  <TableName>MealCalc_GoodPackingUnit</TableName>
+  <ViewName>MealCalc_GoodPackingUnit_View</ViewName>
+  <StatusColumnInitialValue>0</StatusColumnInitialValue>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <MethodInsert>true</MethodInsert>
+  <MethodBeforeInsert>true</MethodBeforeInsert>
+  <MethodAfterInsert>false</MethodAfterInsert>
+  <MethodUpdate>true</MethodUpdate>
+  <MethodBeforeUpdate>true</MethodBeforeUpdate>
+  <MethodAfterUpdate>false</MethodAfterUpdate>
+  <MethodLoad>true</MethodLoad>
+  <MethodDelete>true</MethodDelete>
+  <MethodBeforeDelete>false</MethodBeforeDelete>
+  <MethodAfterDelete>false</MethodAfterDelete>
+  <MethodRestore>false</MethodRestore>
+  <MethodBeforeRestore>false</MethodBeforeRestore>
+  <MethodAfterRestore>false</MethodAfterRestore>
+  <MethodCopyByParentObject>false</MethodCopyByParentObject>
+  <MethodDeleteByParentObject>false</MethodDeleteByParentObject>
+</PlainObjectConstructorSettings>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StoredQueryConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodRemains</EntityName>
+  <AttributeAliases />
+  <ComplexAttributeAliases />
+  <UIListCaption>Остатки по продуктам</UIListCaption>
+  <PredefinedAttributes>false</PredefinedAttributes>
+  <StoredProcedureName>MealCalc_GoodRemains_LoadList</StoredProcedureName>
+</StoredQueryConstructorSettings>

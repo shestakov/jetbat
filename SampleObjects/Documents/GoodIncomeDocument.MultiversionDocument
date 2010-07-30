@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MultiversionDocumentConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>GoodIncomeDocument</EntityName>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>DocumentDateTime</Name>
+      <FriendlyName>DocumentDateTime</FriendlyName>
+      <UILabel>Дата документа</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>IncomeCalcDayID</Name>
+      <FriendlyName>IncomeCalcDayID</FriendlyName>
+      <UILabel>IncomeCalcDayID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>SupplierID</Name>
+      <FriendlyName>SupplierID</FriendlyName>
+      <UILabel>SupplierID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>InvoiceNumber</Name>
+      <FriendlyName>InvoiceNumber</FriendlyName>
+      <UILabel>Накладная №</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodIncomeDocument_MultiversionDocument_DocumentVersion</Name>
+      <FriendlyName>FK_MealCalc_GoodIncomeDocument_MultiversionDocument_DocumentVersion</FriendlyName>
+      <UILabel>Документ</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodIncomeDocument_MealCalc_Supplier</Name>
+      <FriendlyName>FK_MealCalc_GoodIncomeDocument_MealCalc_Supplier</FriendlyName>
+      <UILabel>Поставщик</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>FK_MealCalc_GoodIncomeDocument_MealCalc_CalcDay</Name>
+      <FriendlyName>FK_MealCalc_GoodIncomeDocument_MealCalc_CalcDay</FriendlyName>
+      <UILabel>Учетный день</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </ComplexAttributeAliases>
+  <TableName>MealCalc_GoodIncomeDocument</TableName>
+  <ViewName>MealCalc_GoodIncomeDocument_View</ViewName>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <HeaderNullableColumns />
+  <MethodAfterCreate>false</MethodAfterCreate>
+  <MethodBeforeUpdateVersion>false</MethodBeforeUpdateVersion>
+  <MethodBeforeConfirmEdit>false</MethodBeforeConfirmEdit>
+  <MethodAfterConfirmEdit>false</MethodAfterConfirmEdit>
+  <MethodBeforeCommit>false</MethodBeforeCommit>
+  <MethodBeforeRollback>true</MethodBeforeRollback>
+</MultiversionDocumentConstructorSettings>

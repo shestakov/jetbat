@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B00DEBFB-8148-42DF-96BF-DF49B5BD8F14}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBat.Test</RootNamespace>
+    <AssemblyName>JetBat.Test</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\External\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessObjectHelper.cs" />
+    <Compile Include="BusinessObjectTest\DishCategoryTest.cs" />
+    <Compile Include="BusinessObjectTest\DishGoodTest.cs" />
+    <Compile Include="BusinessObjectTest\DishTest.cs" />
+    <Compile Include="BusinessObjectTest\GoodCategoryTest.cs" />
+    <Compile Include="BusinessObjectTest\GoodTest.cs" />
+    <Compile Include="BusinessObjectTest\MenuTest.cs" />
+    <Compile Include="BusinessObjectTest\PlainObjectTest.cs" />
+    <Compile Include="BusinessObjectTest\SupplierTest.cs" />
+    <Compile Include="FunctionalTests.cs" />
+    <Compile Include="FunctionalTest\FunctionalTest.cs" />
+    <Compile Include="FunctionalTest\MealCalcFunctionalTest.cs" />
+    <Compile Include="FunctionalTest\NotEnoughGoodForReservationTest.cs" />
+    <Compile Include="FunctionalTest\TwoGoodsCompleteTest.cs" />
+    <Compile Include="FunctionalTest\TwoGoodsInTwoIncomesTest.cs" />
+    <Compile Include="FunctionalTest\TwoGoodsLateIncomeCompleteTest.cs" />
+    <Compile Include="FunctionalTest\WriteOffTest.cs" />
+    <Compile Include="MembershipTestHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestFixtureBase.cs" />
+    <Compile Include="TestFixtureBase_Settings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JetBat.Client\JetBat.Client.csproj">
+      <Project>{1C09911F-6064-468B-A8D3-5EDCCB350129}</Project>
+      <Name>JetBat.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JetBat.Metadata\JetBat.Metadata.csproj">
+      <Project>{D2396A2D-18B6-4B84-8DB7-D593F00EA615}</Project>
+      <Name>JetBat.Metadata</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\DropDatabase.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

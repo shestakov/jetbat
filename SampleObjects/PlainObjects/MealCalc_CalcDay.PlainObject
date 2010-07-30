@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlainObjectConstructorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EntityNamespace>MealCalc</EntityNamespace>
+  <EntityName>CalcDay</EntityName>
+  <Methods>
+    <BusinessObjectMethodDefinition>
+      <Name>FindByDate</Name>
+      <FriendlyName>FindByDate</FriendlyName>
+      <ReturnsXmlErrorList>false</ReturnsXmlErrorList>
+      <DatabaseStoredProcedureName>MealCalc_CalcDay_FindByDateTime</DatabaseStoredProcedureName>
+    </BusinessObjectMethodDefinition>
+    <BusinessObjectMethodDefinition>
+      <Name>InsertByDateTime</Name>
+      <FriendlyName>InsertByDateTime</FriendlyName>
+      <ReturnsXmlErrorList>false</ReturnsXmlErrorList>
+      <DatabaseStoredProcedureName>MealCalc_CalcDay_InsertByDateTime</DatabaseStoredProcedureName>
+    </BusinessObjectMethodDefinition>
+  </Methods>
+  <AttributeAliases>
+    <AttributeAlias>
+      <Name>Comment</Name>
+      <FriendlyName>Comment</FriendlyName>
+      <UILabel>Примечание</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>CalcDate</Name>
+      <FriendlyName>CalcDate</FriendlyName>
+      <UILabel>Дата</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+    <AttributeAlias>
+      <Name>ID</Name>
+      <FriendlyName>ID</FriendlyName>
+      <UILabel>ID</UILabel>
+      <IsUserVisible>true</IsUserVisible>
+      <UIPreferredWidth>0</UIPreferredWidth>
+      <UIPreferredIndex>0</UIPreferredIndex>
+      <UIAllowsMultilineText>false</UIAllowsMultilineText>
+    </AttributeAlias>
+  </AttributeAliases>
+  <ComplexAttributeAliases />
+  <UIEditorName>CalcDayForm</UIEditorName>
+  <TableName>MealCalc_CalcDay</TableName>
+  <ViewName>MealCalc_CalcDay_View</ViewName>
+  <StatusColumnInitialValue>0</StatusColumnInitialValue>
+  <InvisibleColumns />
+  <ReadOnlyColumns />
+  <IgnoredColumns />
+  <MethodInsert>true</MethodInsert>
+  <MethodBeforeInsert>false</MethodBeforeInsert>
+  <MethodAfterInsert>false</MethodAfterInsert>
+  <MethodUpdate>true</MethodUpdate>
+  <MethodBeforeUpdate>false</MethodBeforeUpdate>
+  <MethodAfterUpdate>false</MethodAfterUpdate>
+  <MethodLoad>true</MethodLoad>
+  <MethodDelete>true</MethodDelete>
+  <MethodBeforeDelete>false</MethodBeforeDelete>
+  <MethodAfterDelete>false</MethodAfterDelete>
+  <MethodRestore>false</MethodRestore>
+  <MethodBeforeRestore>false</MethodBeforeRestore>
+  <MethodAfterRestore>false</MethodAfterRestore>
+  <MethodCopyByParentObject>false</MethodCopyByParentObject>
+  <MethodDeleteByParentObject>false</MethodDeleteByParentObject>
+</PlainObjectConstructorSettings>
