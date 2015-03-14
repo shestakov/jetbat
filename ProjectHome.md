@@ -1,0 +1,1 @@
+**JetBat** is an implementation of an _entity engine_ for domain applications created in .Net and MS SQL Server.
